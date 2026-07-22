@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo de Traslados</title>
+<style>
+  :root{
+    --bg:#0A1520;
+    --bg2:#0D1B2A;
+    --card:#122132;
+    --card-alt:#16283C;
+    --border:#1F3347;
+    --lime:#A8E00A;
+    --lime-dim:#7FAE08;
+    --blue:#3B82F6;
+    --amber:#F5A623;
+    --red:#EF4444;
+    --green:#22C55E;
+    --text:#FFFFFF;
+    --text-dim:#8CA0B3;
+    --text-dim2:#5E7488;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:24px 12px;
+  }
+  .phone{
+    width:390px;
+    max-width:100%;
+    background:var(--bg2);
+    border-radius:28px;
+    border:1px solid #1a2c3d;
+    overflow:hidden;
+    box-shadow:0 30px 60px rgba(0,0,0,.5);
+    min-height:820px;
+    display:flex;
+    flex-direction:column;
+  }
+  /* Header */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 18px 10px 18px;
+  }
+  .icon-btn{
+    color:var(--lime); font-size:20px; background:none; border:none; cursor:pointer;
+    width:28px; height:28px; display:flex; align-items:center; justify-content:center;
+  }
+  .title{
+    font-size:19px; font-weight:700; letter-spacing:.2px;
+  }
+  .menu-lines{
+    color:var(--lime); font-size:20px; cursor:pointer;
+  }
+
+  /* Role switcher */
+  .role-bar{
+    margin:2px 16px 14px 16px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:10px 14px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px;
+  }
+  .role-bar .label{font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.5px;}
+  .role-bar .value{font-size:13.5px; font-weight:700; color:var(--text); margin-top:2px;}
+  select#roleSelect{
+    background:var(--bg2); color:var(--lime); border:1px solid var(--lime-dim);
+    border-radius:10px; padding:6px 8px; font-size:12px; font-weight:600;
+  }
+
+  /* Tabs */
+  .tabs{
+    display:flex; margin:0 16px 14px 16px;
+    background:var(--card);
+    border-radius:14px; padding:4px; gap:4px;
+  }
+  .tab{
+    flex:1; text-align:center; padding:9px 4px; border-radius:11px;
+    font-size:13px; font-weight:700; color:var(--text-dim); cursor:pointer;
+    transition:.15s;
+  }
+  .tab.active{ background:var(--lime); color:#0A1520; }
+
+  .content{ padding:0 16px 24px 16px; overflow-y:auto; flex:1; }
+
+  /* Filters */
+  .filters{
+    display:flex; gap:8px; overflow-x:auto; padding-bottom:10px; margin-bottom:14px;
+    scrollbar-width:none;
+  }
+  .filters::-webkit-scrollbar{display:none;}
+  .chip{
+    white-space:nowrap; font-size:12.5px; font-weight:600; color:var(--blue);
+    border:1px solid var(--blue); border-radius:20px; padding:7px 13px;
+    display:flex; align-items:center; gap:6px; cursor:pointer; background:rgba(59,130,246,.08);
+  }
+  .chip.on{ background:var(--blue); color:#fff; }
+
+  /* KPI grid */
+  .kpi-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+  .kpi{
+    background:var(--card); border:1px solid var(--border); border-radius:16px; padding:14px;
+  }
+  .kpi .k-label{ display:flex; align-items:center; gap:6px; color:var(--text-dim); font-size:12px; margin-bottom:10px;}
+  .kpi .k-value{ font-size:24px; font-weight:800; }
+  .kpi .k-sub{ font-size:11px; margin-top:6px; font-weight:600; }
+  .up-red{ color:var(--red); }
+  .up-green{ color:var(--green); }
+  .up-amber{ color:var(--amber); }
+
+  .section-title{
+    font-size:12px; text-transform:uppercase; letter-spacing:.6px; color:var(--text-dim);
+    margin:18px 0 10px 2px; font-weight:700;
+  }
+
+  /* bars ranking */
+  .rank-card{ background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; margin-bottom:16px;}
+  .rank-row{ margin-bottom:14px; }
+  .rank-row:last-child{ margin-bottom:0; }
+  .rank-top{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; }
+  .rank-name{ font-size:13px; font-weight:700; }
+  .rank-count{ font-size:13px; font-weight:800; }
+  .bar-bg{ height:6px; background:#1E3247; border-radius:4px; overflow:hidden; }
+  .bar-fill{ height:100%; background:var(--lime); border-radius:4px; }
+  .bar-fill.alert{ background:var(--red); }
+
+  /* Traslado card (lista) */
+  .traslado-card{
+    background:var(--card); border:1px solid var(--border); border-radius:16px;
+    padding:16px; margin-bottom:12px; cursor:pointer; transition:.15s;
+  }
+  .traslado-card:active{ border-color:var(--lime-dim); }
+  .tc-top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;}
+  .tc-route{ font-size:15px; font-weight:800; line-height:1.3; }
+  .tc-route .arrow{ color:var(--lime); margin:0 4px; }
+  .tc-id{ font-size:11px; color:var(--text-dim2); margin-top:3px; }
+  .badge{
+    font-size:11px; font-weight:700; padding:5px 10px; border-radius:20px; white-space:nowrap;
+  }
+  .badge-pend{ background:rgba(245,166,35,.15); color:var(--amber); }
+  .badge-transito{ background:rgba(59,130,246,.15); color:var(--blue); }
+  .badge-recep{ background:rgba(168,224,10,.15); color:var(--lime); }
+
+  .tc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; margin-bottom:10px; }
+  .tc-item .lbl{ font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.3px; }
+  .tc-item .val{ font-size:13px; font-weight:600; margin-top:2px; }
+
+  .tc-footer{ display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:10px; margin-top:4px;}
+  .days-tag{ font-size:12px; font-weight:800; padding:4px 10px; border-radius:8px; }
+  .days-ok{ background:rgba(34,197,94,.15); color:var(--green); }
+  .days-warn{ background:rgba(245,166,35,.15); color:var(--amber); }
+  .days-alert{ background:rgba(239,68,68,.18); color:var(--red); }
+  .see-more{ color:var(--lime); font-size:12.5px; font-weight:700; }
+
+  /* Detail view */
+  .back-row{ display:flex; align-items:center; gap:10px; margin-bottom:16px; cursor:pointer; }
+  .back-row span{ color:var(--lime); font-size:13.5px; font-weight:700; }
+
+  .detail-card{
+    background:var(--card); border:1px solid var(--border); border-radius:18px; padding:18px; margin-bottom:18px;
+  }
+  .detail-route{ font-size:18px; font-weight:800; margin-bottom:4px; }
+  .detail-sub{ font-size:12px; color:var(--text-dim); margin-bottom:14px; }
+  .detail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px 16px; }
+  .detail-grid .lbl{ font-size:10.5px; color:var(--text-dim); text-transform:uppercase; }
+  .detail-grid .val{ font-size:13.5px; font-weight:700; margin-top:3px; }
+
+  /* Timeline */
+  .timeline{ position:relative; padding-left:30px; }
+  .tl-item{ position:relative; padding-bottom:26px; }
+  .tl-item:last-child{ padding-bottom:0; }
+  .tl-dot{
+    position:absolute; left:-30px; top:2px; width:18px; height:18px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800;
+    border:2px solid var(--border); background:var(--card);
+  }
+  .tl-item.done .tl-dot{ background:var(--lime); border-color:var(--lime); color:#0A1520; }
+  .tl-item.current .tl-dot{ background:var(--card); border-color:var(--lime); color:var(--lime); box-shadow:0 0 0 4px rgba(168,224,10,.15); }
+  .tl-item.pending .tl-dot{ background:var(--card); border-color:var(--text-dim2); color:var(--text-dim2); }
+  .tl-line{
+    position:absolute; left:-21px; top:20px; width:2px; height:calc(100% - 8px);
+    background:var(--border);
+  }
+  .tl-item.done .tl-line{ background:var(--lime-dim); }
+  .tl-item:last-child .tl-line{ display:none; }
+  .tl-title{ font-size:14px; font-weight:700; }
+  .tl-item.pending .tl-title{ color:var(--text-dim); }
+  .tl-meta{ font-size:12px; color:var(--text-dim); margin-top:3px; line-height:1.5; }
+  .tl-item.pending .tl-meta{ color:var(--text-dim2); }
+  .tl-status{ display:inline-block; font-size:10.5px; font-weight:700; margin-top:6px; padding:3px 8px; border-radius:6px; }
+  .tl-status.wait{ background:rgba(245,166,35,.15); color:var(--amber); }
+
+  .alert-box{
+    background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.4); border-radius:14px;
+    padding:12px 14px; margin-top:18px; display:flex; gap:10px; align-items:flex-start;
+  }
+  .alert-box .a-icon{ color:var(--red); font-size:16px; }
+  .alert-box .a-text{ font-size:12.5px; color:#FCA5A5; line-height:1.5; }
+  .alert-box .a-text b{ color:var(--red); }
+
+  .empty-note{ text-align:center; color:var(--text-dim2); font-size:12.5px; padding:30px 10px; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="topbar">
+    <button class="icon-btn">&#8592;</button>
+    <div class="title">Traslados</div>
+    <div class="menu-lines">&#9776;</div>
+  </div>
+
+  <div class="role-bar">
+    <div>
+      <div class="label">Vista actual</div>
+      <div class="value" id="roleValue">Jefe de Zona · Zona Norte</div>
+    </div>
+    <select id="roleSelect" onchange="setRole(this.value)">
+      <option value="zona">Jefe de Zona</option>
+      <option value="regional">Jefe Regional</option>
+      <option value="gerencia">Gerencia (todo)</option>
+    </select>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" id="tabDash" onclick="showTab('dash')">Dashboard</div>
+    <div class="tab" id="tabList" onclick="showTab('list')">Lista</div>
+    <div class="tab" id="tabDet" style="display:none;" onclick="showTab('detail')">Detalle</div>
+  </div>
+
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+/* ---------- DATOS DE EJEMPLO ---------- */
+const TRASLADOS = [
+  {id:"TR-10432", tipo:"CEDI → Tienda", origen:"CEDI Bucaramanga", destino:"Tienda Cabecera", region:"Norte", zona:"Zona Norte", fDespacho:"14 jul 2026", fRecepcion:"15 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:7, paquetes:14, motivo:"Reposición de inventario", etapas:[
+    {n:"Despacho", loc:"CEDI Bucaramanga", fecha:"14 jul 2026 · 9:40 am", resp:"Luz Anyely Sanabria", done:true},
+    {n:"Recepción en destino", loc:"Tienda Cabecera", fecha:"15 jul 2026 · 11:10 am", resp:"Jefferson López", done:true},
+    {n:"Consolidación", loc:"Tienda Cabecera", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TR-10428", tipo:"Tienda → Tienda", origen:"Tienda Cañaveral", destino:"Tienda Cabecera", region:"Norte", zona:"Zona Norte", fDespacho:"18 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:3, paquetes:6, motivo:"Traslado por talla faltante", etapas:[
+    {n:"Despacho", loc:"Tienda Cañaveral", fecha:"18 jul 2026 · 3:00 pm", resp:"Mario Guerrero", done:true},
+    {n:"Recepción en destino", loc:"Tienda Cabecera", fecha:"19 jul 2026 · 9:20 am", resp:"Jefferson López", done:true},
+    {n:"Consolidación", loc:"Tienda Cabecera", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TR-10440", tipo:"Tienda → CEDI", origen:"Tienda Floridablanca", destino:"CEDI Bucaramanga", region:"Norte", zona:"Zona Norte", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:2, paquetes:22, motivo:"Devolución de temporada", etapas:[
+    {n:"Despacho", loc:"Tienda Floridablanca", fecha:"20 jul 2026 · 4:15 pm", resp:"Erian Mariaca", done:true},
+    {n:"Recepción en destino", loc:"CEDI Bucaramanga", fecha:"En tránsito", resp:"—", done:false, current:true},
+    {n:"Consolidación", loc:"CEDI Bucaramanga", fecha:"Pendiente", resp:"—", done:false},
+  ]},
+  {id:"TR-10399", tipo:"CEDI → Tienda", origen:"CEDI Bucaramanga", destino:"Tienda Girón", region:"Norte", zona:"Zona Norte", fDespacho:"9 jul 2026", fRecepcion:"10 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:12, paquetes:31, motivo:"Surtido colección nueva", etapas:[
+    {n:"Despacho", loc:"CEDI Bucaramanga", fecha:"9 jul 2026 · 8:00 am", resp:"Luz Anyely Sanabria", done:true},
+    {n:"Recepción en destino", loc:"Tienda Girón", fecha:"10 jul 2026 · 10:45 am", resp:"Oscar Gelvez", done:true},
+    {n:"Consolidación", loc:"Tienda Girón", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TR-10455", tipo:"Tienda → Tienda", origen:"Tienda Cúcuta Centro", destino:"Tienda Villa del Rosario", region:"Oriente", zona:"Zona Oriente", fDespacho:"19 jul 2026", fRecepcion:"20 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:2, paquetes:9, motivo:"Balanceo de inventario", etapas:[
+    {n:"Despacho", loc:"Tienda Cúcuta Centro", fecha:"19 jul 2026 · 1:30 pm", resp:"José Garnica", done:true},
+    {n:"Recepción en destino", loc:"Tienda Villa del Rosario", fecha:"20 jul 2026 · 8:50 am", resp:"Julián Hernández", done:true},
+    {n:"Consolidación", loc:"Tienda Villa del Rosario", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TR-10380", tipo:"CEDI → Tienda", origen:"CEDI Cúcuta", destino:"Tienda Cúcuta Centro", region:"Oriente", zona:"Zona Oriente", fDespacho:"5 jul 2026", fRecepcion:"6 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:16, paquetes:40, motivo:"Reposición de inventario", etapas:[
+    {n:"Despacho", loc:"CEDI Cúcuta", fecha:"5 jul 2026 · 9:00 am", resp:"Herbert Osorio", done:true},
+    {n:"Recepción en destino", loc:"Tienda Cúcuta Centro", fecha:"6 jul 2026 · 2:10 pm", resp:"José Garnica", done:true},
+    {n:"Consolidación", loc:"Tienda Cúcuta Centro", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+];
+
+const ROLE_SCOPE = {
+  zona:     {label:"Jefe de Zona · Zona Norte", filter: t => t.zona === "Zona Norte"},
+  regional: {label:"Jefe Regional · Región Norte", filter: t => t.region === "Norte"},
+  gerencia: {label:"Gerencia · Todas las regiones", filter: t => true},
+};
+
+let currentRole = "zona";
+let currentTab = "dash";
+let currentDetailId = null;
+
+function scopedTraslados(){
+  return TRASLADOS.filter(ROLE_SCOPE[currentRole].filter);
+}
+function pendientes(){
+  return scopedTraslados().filter(t => t.estado === "pend_consolidar");
+}
+function dayClass(d){
+  if(d >= 10) return "alert";
+  if(d >= 5) return "warn";
+  return "ok";
+}
+function dayBadgeClass(d){
+  if(d>=10) return "days-alert";
+  if(d>=5) return "days-warn";
+  return "days-ok";
+}
+function estadoBadge(t){
+  if(t.estado === "pend_consolidar") return `<span class="badge badge-pend">Pend. consolidar</span>`;
+  if(t.estado === "en_transito") return `<span class="badge badge-transito">En tránsito</span>`;
+  return `<span class="badge badge-recep">Recepcionado</span>`;
+}
+
+function setRole(v){
+  currentRole = v;
+  document.getElementById("roleValue").textContent = ROLE_SCOPE[v].label;
+  render();
+}
+
+function showTab(t){
+  currentTab = t;
+  document.getElementById("tabDash").classList.toggle("active", t==="dash");
+  document.getElementById("tabList").classList.toggle("active", t==="list");
+  document.getElementById("tabDet").classList.toggle("active", t==="detail");
+  document.getElementById("tabDet").style.display = (t==="detail") ? "block" : "none";
+  render();
+}
+
+function openDetail(id){
+  currentDetailId = id;
+  showTab("detail");
+}
+
+function renderDashboard(){
+  const pend = pendientes();
+  const total = pend.length;
+  const avgDias = total ? Math.round(pend.reduce((a,t)=>a+t.dias,0)/total) : 0;
+  const alertas = pend.filter(t => t.dias >= 10).length;
+  const scoped = scopedTraslados();
+  const pctSemana = scoped.length ? Math.round((scoped.filter(t=>t.estado!=="pend_consolidar" && t.estado!=="en_transito").length / scoped.length) * 100) : 0;
+
+  // ranking por bodega destino (solo pendientes)
+  const byDestino = {};
+  pend.forEach(t => { byDestino[t.destino] = (byDestino[t.destino]||0) + 1; });
+  const ranking = Object.entries(byDestino).sort((a,b)=>b[1]-a[1]);
+  const maxCount = ranking.length ? ranking[0][1] : 1;
+
+  let html = `
+    <div class="filters">
+      <div class="chip on">Todos</div>
+      <div class="chip">Bodega origen</div>
+      <div class="chip">Bodega destino</div>
+      <div class="chip">Tipo traslado</div>
+      <div class="chip">📅 Fechas</div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="k-label">📦 Sin consolidar</div>
+        <div class="k-value">${total}</div>
+        <div class="k-sub ${alertas>0?'up-red':'up-green'}">${alertas} con alerta ≥10 días</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">⏱ Prom. sin consolidar</div>
+        <div class="k-value">${avgDias}d</div>
+        <div class="k-sub up-amber">tiempo desde recepción</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">🚚 En tránsito</div>
+        <div class="k-value">${scoped.filter(t=>t.estado==='en_transito').length}</div>
+        <div class="k-sub up-green">hacia bodega destino</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">✅ Consolidados (sem.)</div>
+        <div class="k-value">${pctSemana}%</div>
+        <div class="k-sub up-green">vs. total de la semana</div>
+      </div>
+    </div>
+
+    <div class="section-title">Pendientes por bodega destino</div>
+    <div class="rank-card">
+      ${ranking.length ? ranking.map(([nombre,count])=>`
+        <div class="rank-row">
+          <div class="rank-top">
+            <div class="rank-name">${nombre}</div>
+            <div class="rank-count">${count}</div>
+          </div>
+          <div class="bar-bg"><div class="bar-fill ${count>=4?'alert':''}" style="width:${(count/maxCount)*100}%"></div></div>
+        </div>
+      `).join("") : `<div class="empty-note">No hay traslados pendientes por consolidar en tu alcance.</div>`}
+    </div>
+
+    <div class="section-title">Más antiguos sin consolidar</div>
+  `;
+
+  const top3 = [...pend].sort((a,b)=>b.dias-a.dias).slice(0,3);
+  if(top3.length===0){
+    html += `<div class="empty-note">Todo al día 🎉</div>`;
+  } else {
+    top3.forEach(t => { html += traslladoCardHTML(t); });
+  }
+
+  document.getElementById("content").innerHTML = html;
+}
+
+function traslladoCardHTML(t){
+  return `
+    <div class="traslado-card" onclick="openDetail('${t.id}')">
+      <div class="tc-top">
+        <div>
+          <div class="tc-route">${t.origen}<span class="arrow">→</span>${t.destino}</div>
+          <div class="tc-id">${t.id} · ${t.tipo}</div>
+        </div>
+        ${estadoBadge(t)}
+      </div>
+      <div class="tc-grid">
+        <div class="tc-item"><div class="lbl">Despacho</div><div class="val">${t.fDespacho}</div></div>
+        <div class="tc-item"><div class="lbl">Recepción</div><div class="val">${t.fRecepcion || '—'}</div></div>
+        <div class="tc-item"><div class="lbl">Paquetes</div><div class="val">${t.paquetes}</div></div>
+        <div class="tc-item"><div class="lbl">Motivo</div><div class="val">${t.motivo}</div></div>
+      </div>
+      <div class="tc-footer">
+        <span class="days-tag ${dayBadgeClass(t.dias)}">${t.dias} días sin consolidar</span>
+        <span class="see-more">Ver trazabilidad ›</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderList(){
+  const scoped = scopedTraslados();
+  let html = `
+    <div class="filters">
+      <div class="chip on">Todos</div>
+      <div class="chip">Pend. consolidar</div>
+      <div class="chip">En tránsito</div>
+      <div class="chip">📅 Fechas</div>
+    </div>
+  `;
+  if(scoped.length === 0){
+    html += `<div class="empty-note">No hay traslados en tu alcance.</div>`;
+  } else {
+    scoped.forEach(t => { html += traslladoCardHTML(t); });
+  }
+  document.getElementById("content").innerHTML = html;
+}
+
+function renderDetail(){
+  const t = TRASLADOS.find(x => x.id === currentDetailId) || scopedTraslados()[0];
+  if(!t){ document.getElementById("content").innerHTML = `<div class="empty-note">Selecciona un traslado desde la lista.</div>`; return; }
+
+  let timelineHTML = "";
+  t.etapas.forEach(e => {
+    const cls = e.done ? "done" : (e.current ? "current" : "pending");
+    const dotContent = e.done ? "✓" : (e.current ? "●" : "");
+    timelineHTML += `
+      <div class="tl-item ${cls}">
+        <div class="tl-dot">${dotContent}</div>
+        <div class="tl-line"></div>
+        <div class="tl-title">${e.n}</div>
+        <div class="tl-meta">${e.loc}<br>${e.fecha}${e.resp!=="—" ? " · " + e.resp : ""}</div>
+        ${e.current ? `<span class="tl-status wait">En espera de acción</span>` : ""}
+      </div>
+    `;
+  });
+
+  const alertHTML = t.estado === "pend_consolidar" && t.dias >= 10 ? `
+    <div class="alert-box">
+      <div class="a-icon">⚠</div>
+      <div class="a-text"><b>${t.dias} días</b> sin consolidarse en ${t.destino}. Este traslado supera el tiempo habitual de gestión.</div>
+    </div>
+  ` : "";
+
+  document.getElementById("content").innerHTML = `
+    <div class="back-row" onclick="showTab('list')">
+      <span style="color:var(--lime); font-size:16px;">&#8592;</span>
+      <span>Volver a la lista</span>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-route">${t.origen} → ${t.destino}</div>
+      <div class="detail-sub">${t.id} · ${t.tipo}</div>
+      <div class="detail-grid">
+        <div><div class="lbl">Estado</div><div class="val">${t.estado==='pend_consolidar'?'Pend. consolidar':(t.estado==='en_transito'?'En tránsito':'Recepcionado')}</div></div>
+        <div><div class="lbl">Paquetes</div><div class="val">${t.paquetes}</div></div>
+        <div><div class="lbl">Motivo</div><div class="val">${t.motivo}</div></div>
+        <div><div class="lbl">Zona</div><div class="val">${t.zona}</div></div>
+      </div>
+    </div>
+
+    <div class="section-title">Trazabilidad</div>
+    <div class="detail-card">
+      <div class="timeline">
+        ${timelineHTML}
+      </div>
+    </div>
+
+    ${alertHTML}
+  `;
+}
+
+function render(){
+  if(currentTab === "dash") renderDashboard();
+  else if(currentTab === "list") renderList();
+  else renderDetail();
+}
+
+render();
+</script>
+</body>
+</html>
