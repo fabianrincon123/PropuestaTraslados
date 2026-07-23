@@ -95,18 +95,23 @@
 
   .content{ padding:0 16px 24px 16px; overflow-y:auto; flex:1; }
 
-  /* Filters */
+  /* Filters: envuelven en varias líneas, nunca se salen de pantalla ni requieren scroll horizontal */
   .filters{
-    display:flex; gap:8px; overflow-x:auto; padding-bottom:10px; margin-bottom:14px;
-    scrollbar-width:none;
+    display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;
   }
-  .filters::-webkit-scrollbar{display:none;}
   .chip{
     white-space:nowrap; font-size:12.5px; font-weight:600; color:var(--blue);
     border:1px solid var(--blue); border-radius:20px; padding:7px 13px;
     display:flex; align-items:center; gap:6px; cursor:pointer; background:rgba(59,130,246,.08);
   }
   .chip.on{ background:var(--blue); color:#fff; }
+
+  /* Breadcrumbs jerarquía (región / zona / tienda) */
+  .crumbs{ display:flex; flex-wrap:wrap; align-items:center; gap:4px; margin:-2px 0 10px 2px; font-size:11.5px; }
+  .crumb{ color:var(--text-dim); cursor:pointer; font-weight:600; }
+  .crumb.active{ color:var(--lime); font-weight:800; cursor:default; }
+  .crumb-sep{ color:var(--text-dim2); margin:0 1px; }
+  .level-hint{ font-weight:400; color:var(--text-dim); font-size:11px; }
 
   /* KPI grid - 3 columnas */
   .kpi-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:16px; }
@@ -323,6 +328,21 @@ const TRASLADOS = [
     {n:"Recepción en destino", loc:"Tienda Girón", fecha:"21 jul 2026 · 3:30 pm", resp:"Oscar Gelvez", done:true},
     {n:"Consolidación", loc:"Tienda Girón", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
+  {id:"TR-10480", tipo:"CEDI → Tienda", origen:"CEDI Bucaramanga", destino:"Tienda Piedecuesta", region:"Norte", zona:"Zona Sur", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:6, paquetes:18, motivo:"Reposición de inventario", etapas:[
+    {n:"Despacho", loc:"CEDI Bucaramanga", fecha:"15 jul 2026 · 8:20 am", resp:"Luz Anyely Sanabria", done:true},
+    {n:"Recepción en destino", loc:"Tienda Piedecuesta", fecha:"16 jul 2026 · 10:05 am", resp:"Camila Rueda", done:true},
+    {n:"Consolidación", loc:"Tienda Piedecuesta", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TR-10481", tipo:"CEDI → Tienda", origen:"CEDI Bucaramanga", destino:"Tienda Real de Minas", region:"Norte", zona:"Zona Sur", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:9, motivo:"Surtido colección nueva", etapas:[
+    {n:"Despacho", loc:"CEDI Bucaramanga", fecha:"20 jul 2026 · 2:40 pm", resp:"Luz Anyely Sanabria", done:true},
+    {n:"Recepción en destino", loc:"Tienda Real de Minas", fecha:"En tránsito", resp:"—", done:false, current:true},
+    {n:"Consolidación", loc:"Tienda Real de Minas", fecha:"Pendiente", resp:"—", done:false},
+  ]},
+  {id:"TR-10482", tipo:"Tienda → Tienda", origen:"Tienda Piedecuesta", destino:"Tienda Real de Minas", region:"Norte", zona:"Zona Sur", fDespacho:"11 jul 2026", fRecepcion:"12 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:9, paquetes:7, motivo:"Balanceo de inventario", etapas:[
+    {n:"Despacho", loc:"Tienda Piedecuesta", fecha:"11 jul 2026 · 1:10 pm", resp:"Camila Rueda", done:true},
+    {n:"Recepción en destino", loc:"Tienda Real de Minas", fecha:"12 jul 2026 · 9:40 am", resp:"Daniel Peña", done:true},
+    {n:"Consolidación", loc:"Tienda Real de Minas", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
 ];
 
 const ROLE_SCOPE = {
@@ -338,6 +358,88 @@ let currentBodega = null;
 let previousTab = "dash";
 let searchQuery = "";
 let sortOrder = "old"; // 'old' = más antiguo primero (más días), 'new' = más reciente primero
+
+/* ---------- Navegación jerárquica: Región → Zona → Tienda ----------
+   Gerencia arranca viendo regiones. Regional arranca viendo las zonas de su región.
+   Jefe de Zona arranca viendo directamente las tiendas de su zona (no necesita más niveles). */
+const LEVELS = ["region","zona","tienda"];
+let drillPath = []; // [{level:'region', value:'Norte'}, {level:'zona', value:'Zona Sur'}, ...]
+
+function baseLevelForRole(){
+  if(currentRole === "gerencia") return "region";
+  if(currentRole === "regional") return "zona";
+  return "tienda"; // jefe de zona
+}
+function currentDrillLevel(){
+  const start = LEVELS.indexOf(baseLevelForRole());
+  const idx = Math.min(start + drillPath.length, LEVELS.length - 1);
+  return LEVELS[idx];
+}
+function drillFilteredTraslados(){
+  let list = scopedTraslados();
+  drillPath.forEach(step=>{
+    if(step.level === "region") list = list.filter(t => t.region === step.value);
+    if(step.level === "zona") list = list.filter(t => t.zona === step.value);
+  });
+  return list;
+}
+function buildGroups(list, level){
+  const keyFn = level==="region" ? t=>t.region : level==="zona" ? t=>t.zona : t=>t.destino;
+  const map = {};
+  list.forEach(t=>{
+    const k = keyFn(t);
+    if(!map[k]) map[k] = {name:k, total:0, pend:0, alert:0};
+    map[k].total++;
+    if(t.estado === "pend_consolidar"){ map[k].pend++; if(t.dias >= 10) map[k].alert++; }
+  });
+  return Object.values(map).sort((a,b)=> b.pend - a.pend || b.total - a.total);
+}
+function drillInto(name){
+  const level = currentDrillLevel();
+  if(level === "tienda"){ openBodega(name); return; }
+  drillPath.push({level, value:name});
+  render();
+}
+function crumbClick(idx){
+  drillPath = idx < 0 ? [] : drillPath.slice(0, idx+1);
+  render();
+}
+function renderHierarchyExplorer(){
+  const level = currentDrillLevel();
+  const base = baseLevelForRole();
+  const list = drillFilteredTraslados();
+  const groups = buildGroups(list, level);
+  const maxPend = Math.max(1, ...groups.map(g=>g.pend));
+
+  let crumbsHTML = "";
+  if(base !== "tienda"){
+    const rootLabel = base === "region" ? "Todas las regiones" : "Zonas de tu región";
+    const crumbs = [{label: rootLabel}].concat(drillPath.map(d=>({label:d.value})));
+    crumbsHTML = `<div class="crumbs">` + crumbs.map((c,i)=>{
+      const isActive = i === crumbs.length - 1;
+      const clickIdx = i - 1;
+      return `<span class="crumb ${isActive?'active':''}" onclick="crumbClick(${clickIdx})">${c.label}</span>` +
+             (i < crumbs.length - 1 ? `<span class="crumb-sep">›</span>` : "");
+    }).join("") + `</div>`;
+  }
+
+  const levelTitle = level === "region" ? "Regiones" : level === "zona" ? "Zonas" : "Tiendas";
+  const rowsHTML = groups.length ? groups.map(g => `
+    <div class="rank-row" onclick="drillInto('${g.name.replace(/'/g,"\\'")}')">
+      <div class="rank-top">
+        <div class="rank-name">${g.name} <span class="chev">›</span></div>
+        <div class="rank-count">${g.pend}${g.alert>0 ? ` <span style="color:var(--red);font-weight:800;">(${g.alert} 🔴)</span>` : ""}</div>
+      </div>
+      <div class="bar-bg"><div class="bar-fill ${g.alert>0?'alert':''}" style="width:${(g.pend/maxPend)*100}%"></div></div>
+    </div>
+  `).join("") : `<div class="empty-note">No hay traslados en este nivel.</div>`;
+
+  return `
+    <div class="section-title">${levelTitle} <span class="level-hint">sin consolidar</span></div>
+    ${crumbsHTML}
+    <div class="rank-card">${rowsHTML}</div>
+  `;
+}
 
 function scopedTraslados(){
   return TRASLADOS.filter(ROLE_SCOPE[currentRole].filter);
@@ -368,6 +470,7 @@ function setRole(v){
   document.getElementById("roleValue").textContent = ROLE_SCOPE[v].label;
   currentTab = "dash";
   currentBodega = null;
+  drillPath = [];
   document.getElementById("tabBodega").style.display = "none";
   document.getElementById("tabDet").style.display = "none";
   updateTabsUI();
@@ -467,15 +570,10 @@ function renderDashboard(){
   const alertas = pend.filter(t => t.dias >= 10).length;
   const pctSemana = scoped.length ? Math.round((scoped.filter(t=>t.estado!=="pend_consolidar" && t.estado!=="en_transito").length / scoped.length) * 100) : 0;
 
-  const byDestino = {};
-  pend.forEach(t => { byDestino[t.destino] = (byDestino[t.destino]||0) + 1; });
-  const ranking = Object.entries(byDestino).sort((a,b)=>b[1]-a[1]);
-  const maxCount = ranking.length ? ranking[0][1] : 1;
-
   let html = `
     <div class="filters">
       <div class="chip on">Todos</div>
-      <div class="chip">Bodega origen</div>
+      <div class="chip">Bodega destino</div>
       <div class="chip">Tipo traslado</div>
       <div class="chip">📅 Fechas</div>
     </div>
@@ -498,18 +596,7 @@ function renderDashboard(){
       </div>
     </div>
 
-    <div class="section-title">Bodegas destino con pendientes</div>
-    <div class="rank-card">
-      ${ranking.length ? ranking.map(([nombre,count])=>`
-        <div class="rank-row" onclick="openBodega('${nombre.replace(/'/g,"\\'")}')">
-          <div class="rank-top">
-            <div class="rank-name">${nombre} <span class="chev">›</span></div>
-            <div class="rank-count">${count}</div>
-          </div>
-          <div class="bar-bg"><div class="bar-fill ${count>=4?'alert':''}" style="width:${(count/maxCount)*100}%"></div></div>
-        </div>
-      `).join("") : `<div class="empty-note">No hay traslados pendientes por consolidar en tu alcance.</div>`}
-    </div>
+    ${renderHierarchyExplorer()}
 
     <div class="section-title">Más antiguos sin consolidar <span class="see-all" onclick="showTab('list')">Ver todos ›</span></div>
     <div class="rows-wrap">
