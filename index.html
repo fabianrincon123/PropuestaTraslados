@@ -61,24 +61,6 @@
     color:var(--lime); font-size:20px; cursor:pointer;
   }
 
-  /* Role switcher */
-  .role-bar{
-    margin:2px 16px 14px 16px;
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:10px 14px;
-    display:flex; align-items:center; justify-content:space-between;
-    gap:10px;
-    flex-shrink:0;
-  }
-  .role-bar .label{font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.5px;}
-  .role-bar .value{font-size:13.5px; font-weight:700; color:var(--text); margin-top:2px;}
-  select#roleSelect{
-    background:var(--bg2); color:var(--lime); border:1px solid var(--lime-dim);
-    border-radius:10px; padding:6px 8px; font-size:12px; font-weight:600;
-  }
-
   /* Tabs */
   .tabs{
     display:flex; margin:0 16px 14px 16px;
@@ -141,6 +123,12 @@
   .rank-name{ font-size:13px; font-weight:700; display:flex; align-items:center; gap:5px; }
   .rank-name .chev{ color:var(--text-dim2); font-size:12px; }
   .rank-count{ font-size:13px; font-weight:800; flex-shrink:0; }
+  .rank-alert-badge{ font-size:11px; font-weight:800; color:var(--red); flex-shrink:0; }
+  .rank-stats{ display:flex; flex-wrap:wrap; gap:12px; margin-bottom:8px; }
+  .stat-item{ font-size:11px; color:var(--text-dim); display:flex; align-items:center; gap:4px; }
+  .stat-item b{ color:var(--text); font-weight:800; font-size:12px; }
+  .stat-pend b{ color:var(--lime); }
+  .stat-transito b{ color:var(--blue); }
   .bar-bg{ height:6px; background:#1E3247; border-radius:4px; overflow:hidden; }
   .bar-fill{ height:100%; background:var(--lime); border-radius:4px; }
   .bar-fill.alert{ background:var(--red); }
@@ -174,6 +162,15 @@
     border:1px solid var(--border); border-radius:20px; padding:6px 12px; cursor:pointer;
   }
   .sort-chip.on{ background:var(--lime); color:#0A1520; border-color:var(--lime); }
+
+  .thresh-row{ display:flex; gap:8px; margin-bottom:12px; }
+  .thresh-chip{
+    font-size:11.5px; font-weight:700; color:var(--text-dim); background:var(--card);
+    border:1px solid var(--border); border-radius:20px; padding:6px 12px; cursor:pointer;
+  }
+  .thresh-chip.on{ background:var(--red); color:#fff; border-color:var(--red); }
+  .thresh-chip.thresh-warn.on{ background:var(--amber); border-color:var(--amber); color:#0A1520; }
+  .thresh-chip.thresh-ok.on{ background:var(--green); border-color:var(--green); color:#0A1520; }
 
   .rows-wrap{ margin-top:6px; }
   .row-item{
@@ -264,20 +261,8 @@
 <div class="phone">
   <div class="topbar">
     <button class="icon-btn" id="topBack" onclick="handleTopBack()">&#8592;</button>
-    <div class="title">Traslados</div>
+    <div class="title">Traslados sin Consolidar</div>
     <div class="menu-lines">&#9776;</div>
-  </div>
-
-  <div class="role-bar">
-    <div>
-      <div class="label">Vista actual</div>
-      <div class="value" id="roleValue">Jefe de Zona · Zona Norte</div>
-    </div>
-    <select id="roleSelect" onchange="setRole(this.value)">
-      <option value="zona">Jefe de Zona</option>
-      <option value="regional">Jefe Regional</option>
-      <option value="gerencia">Gerencia (todo)</option>
-    </select>
   </div>
 
   <div class="tabs">
@@ -291,84 +276,94 @@
 </div>
 
 <script>
-/* ---------- DATOS DE EJEMPLO ---------- */
+/* ---------- DATOS (basados en la estructura real Regional > Ciudad > Zona/Jefe > Bodega) ---------- */
 const TRASLADOS = [
-  {id:"TR-10432", tipo:"CEDI → Tienda", origen:"CEDI Bucaramanga", destino:"Tienda Cabecera", region:"Norte", zona:"Zona Norte", fDespacho:"14 jul 2026", fRecepcion:"15 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:7, paquetes:14, motivo:"Reposición de inventario", etapas:[
-    {n:"Despacho", loc:"CEDI Bucaramanga", fecha:"14 jul 2026 · 9:40 am", resp:"Luz Anyely Sanabria", done:true},
-    {n:"Recepción en destino", loc:"Tienda Cabecera", fecha:"15 jul 2026 · 11:10 am", resp:"Jefferson López", done:true},
-    {n:"Consolidación", loc:"Tienda Cabecera", fecha:"Pendiente", resp:"—", done:false, current:true},
+  {id:"TR-20001", tipo:"CEDI → Tienda", origen:"CEDI Bogotá", destino:"532 - STIRPE TUNAL (BOG)", regional:"Reg Centro", ciudad:"BOGOTA", zona:"Cristina Mancera", fDespacho:"9 jul 2026", fRecepcion:"10 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:12, paquetes:28, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"TBH-045", valorMercancia:8450000, etapas:[
+    {n:"Despacho", loc:"CEDI Bogotá", fecha:"9 jul 2026 · 8:10 am", resp:"Operario CEDI Bogotá", done:true},
+    {n:"Recepción en destino", loc:"532 - STIRPE TUNAL (BOG)", fecha:"10 jul 2026 · 11:30 am", resp:"Cristina Mancera", done:true},
+    {n:"Consolidación", loc:"532 - STIRPE TUNAL (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-10428", tipo:"Tienda → Tienda", origen:"Tienda Cañaveral", destino:"Tienda Cabecera", region:"Norte", zona:"Zona Norte", fDespacho:"18 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:3, paquetes:6, motivo:"Traslado por talla faltante", etapas:[
-    {n:"Despacho", loc:"Tienda Cañaveral", fecha:"18 jul 2026 · 3:00 pm", resp:"Mario Guerrero", done:true},
-    {n:"Recepción en destino", loc:"Tienda Cabecera", fecha:"19 jul 2026 · 9:20 am", resp:"Jefferson López", done:true},
-    {n:"Consolidación", loc:"Tienda Cabecera", fecha:"Pendiente", resp:"—", done:false, current:true},
+  {id:"TR-20002", tipo:"Tienda → Tienda", origen:"545 - DEREK ENSUEÑO (BOG)", destino:"546 - STIRPE ENSUEÑO (BOG)", regional:"Reg Centro", ciudad:"BOGOTA", zona:"Cristina Mancera", fDespacho:"18 jul 2026", fRecepcion:"18 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:4, paquetes:6, motivo:"Balanceo por talla faltante", transportadora:"Vehículo propio", placa:"SKA-112", valorMercancia:1120000, etapas:[
+    {n:"Despacho", loc:"545 - DEREK ENSUEÑO (BOG)", fecha:"18 jul 2026 · 2:00 pm", resp:"Cristina Mancera", done:true},
+    {n:"Recepción en destino", loc:"546 - STIRPE ENSUEÑO (BOG)", fecha:"18 jul 2026 · 3:40 pm", resp:"Cristina Mancera", done:true},
+    {n:"Consolidación", loc:"546 - STIRPE ENSUEÑO (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-10440", tipo:"Tienda → CEDI", origen:"Tienda Floridablanca", destino:"CEDI Bucaramanga", region:"Norte", zona:"Zona Norte", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:2, paquetes:22, motivo:"Devolución de temporada", etapas:[
-    {n:"Despacho", loc:"Tienda Floridablanca", fecha:"20 jul 2026 · 4:15 pm", resp:"Erian Mariaca", done:true},
-    {n:"Recepción en destino", loc:"CEDI Bucaramanga", fecha:"En tránsito", resp:"—", done:false, current:true},
-    {n:"Consolidación", loc:"CEDI Bucaramanga", fecha:"Pendiente", resp:"—", done:false},
+  {id:"TR-20003", tipo:"CEDI → Tienda", origen:"CEDI Bogotá", destino:"825 - STIRPE VIVA (VVC)", regional:"Reg Centro", ciudad:"VILLAVICENCIO", zona:"Fatima Rojas", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:7, paquetes:15, motivo:"Surtido colección nueva", transportadora:"Interrapidísimo", placa:"WKD-330", valorMercancia:5230000, etapas:[
+    {n:"Despacho", loc:"CEDI Bogotá", fecha:"15 jul 2026 · 7:45 am", resp:"Operario CEDI Bogotá", done:true},
+    {n:"Recepción en destino", loc:"825 - STIRPE VIVA (VVC)", fecha:"16 jul 2026 · 10:15 am", resp:"Fatima Rojas", done:true},
+    {n:"Consolidación", loc:"825 - STIRPE VIVA (VVC)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-10399", tipo:"CEDI → Tienda", origen:"CEDI Bucaramanga", destino:"Tienda Girón", region:"Norte", zona:"Zona Norte", fDespacho:"9 jul 2026", fRecepcion:"10 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:12, paquetes:31, motivo:"Surtido colección nueva", etapas:[
-    {n:"Despacho", loc:"CEDI Bucaramanga", fecha:"9 jul 2026 · 8:00 am", resp:"Luz Anyely Sanabria", done:true},
-    {n:"Recepción en destino", loc:"Tienda Girón", fecha:"10 jul 2026 · 10:45 am", resp:"Oscar Gelvez", done:true},
-    {n:"Consolidación", loc:"Tienda Girón", fecha:"Pendiente", resp:"—", done:false, current:true},
+  {id:"TR-20004", tipo:"Tienda → CEDI", origen:"869 - FACTORY CENTRO (VVC)", destino:"CEDI Bogotá", regional:"Reg Centro", ciudad:"VILLAVICENCIO", zona:"Fatima Rojas", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:20, motivo:"Devolución de temporada", transportadora:"Envía", placa:"RMX-880", valorMercancia:4780000, etapas:[
+    {n:"Despacho", loc:"869 - FACTORY CENTRO (VVC)", fecha:"20 jul 2026 · 4:20 pm", resp:"Fatima Rojas", done:true},
+    {n:"Recepción en destino", loc:"CEDI Bogotá", fecha:"En tránsito", resp:"—", done:false, current:true},
+    {n:"Consolidación", loc:"CEDI Bogotá", fecha:"Pendiente", resp:"—", done:false},
   ]},
-  {id:"TR-10455", tipo:"Tienda → Tienda", origen:"Tienda Cúcuta Centro", destino:"Tienda Villa del Rosario", region:"Oriente", zona:"Zona Oriente", fDespacho:"19 jul 2026", fRecepcion:"20 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:2, paquetes:9, motivo:"Balanceo de inventario", etapas:[
-    {n:"Despacho", loc:"Tienda Cúcuta Centro", fecha:"19 jul 2026 · 1:30 pm", resp:"José Garnica", done:true},
-    {n:"Recepción en destino", loc:"Tienda Villa del Rosario", fecha:"20 jul 2026 · 8:50 am", resp:"Julián Hernández", done:true},
-    {n:"Consolidación", loc:"Tienda Villa del Rosario", fecha:"Pendiente", resp:"—", done:false, current:true},
+  {id:"TR-20005", tipo:"CEDI → Tienda", origen:"CEDI Bogotá", destino:"840 - DEREK SANTAFE (BOG)", regional:"Reg Centro1", ciudad:"BOGOTA", zona:"Johana Avendaño", fDespacho:"5 jul 2026", fRecepcion:"6 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:16, paquetes:34, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"TBH-045", valorMercancia:9900000, etapas:[
+    {n:"Despacho", loc:"CEDI Bogotá", fecha:"5 jul 2026 · 8:00 am", resp:"Operario CEDI Bogotá", done:true},
+    {n:"Recepción en destino", loc:"840 - DEREK SANTAFE (BOG)", fecha:"6 jul 2026 · 12:10 pm", resp:"Johana Avendaño", done:true},
+    {n:"Consolidación", loc:"840 - DEREK SANTAFE (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-10380", tipo:"CEDI → Tienda", origen:"CEDI Cúcuta", destino:"Tienda Cúcuta Centro", region:"Oriente", zona:"Zona Oriente", fDespacho:"5 jul 2026", fRecepcion:"6 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:16, paquetes:40, motivo:"Reposición de inventario", etapas:[
-    {n:"Despacho", loc:"CEDI Cúcuta", fecha:"5 jul 2026 · 9:00 am", resp:"Herbert Osorio", done:true},
-    {n:"Recepción en destino", loc:"Tienda Cúcuta Centro", fecha:"6 jul 2026 · 2:10 pm", resp:"José Garnica", done:true},
-    {n:"Consolidación", loc:"Tienda Cúcuta Centro", fecha:"Pendiente", resp:"—", done:false, current:true},
+  {id:"TR-20006", tipo:"Tienda → Tienda", origen:"411 - DEREK NUESTRO (BOG)", destino:"412 - U82 NUESTRO (BOG)", regional:"Reg Centro1", ciudad:"BOGOTA", zona:"Luis Guanchez", fDespacho:"18 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:3, paquetes:5, motivo:"Traslado por talla faltante", transportadora:"Vehículo propio", placa:"SKA-112", valorMercancia:980000, etapas:[
+    {n:"Despacho", loc:"411 - DEREK NUESTRO (BOG)", fecha:"18 jul 2026 · 1:15 pm", resp:"Luis Guanchez", done:true},
+    {n:"Recepción en destino", loc:"412 - U82 NUESTRO (BOG)", fecha:"19 jul 2026 · 9:00 am", resp:"Luis Guanchez", done:true},
+    {n:"Consolidación", loc:"412 - U82 NUESTRO (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-10461", tipo:"CEDI → Tienda", origen:"CEDI Bucaramanga", destino:"Tienda Girón", region:"Norte", zona:"Zona Norte", fDespacho:"21 jul 2026", fRecepcion:"21 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:1, paquetes:11, motivo:"Reposición de inventario", etapas:[
-    {n:"Despacho", loc:"CEDI Bucaramanga", fecha:"21 jul 2026 · 7:50 am", resp:"Luz Anyely Sanabria", done:true},
-    {n:"Recepción en destino", loc:"Tienda Girón", fecha:"21 jul 2026 · 3:30 pm", resp:"Oscar Gelvez", done:true},
-    {n:"Consolidación", loc:"Tienda Girón", fecha:"Pendiente", resp:"—", done:false, current:true},
+  {id:"TR-20007", tipo:"CEDI → Tienda", origen:"CEDI Bogotá", destino:"551 - DEREK VIVA TUNJA (GUS)", regional:"Reg Centro1", ciudad:"TUNJA", zona:"Laura Pacheco", fDespacho:"12 jul 2026", fRecepcion:"13 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:9, paquetes:12, motivo:"Surtido colección nueva", transportadora:"Envía", placa:"RMX-880", valorMercancia:3340000, etapas:[
+    {n:"Despacho", loc:"CEDI Bogotá", fecha:"12 jul 2026 · 9:30 am", resp:"Operario CEDI Bogotá", done:true},
+    {n:"Recepción en destino", loc:"551 - DEREK VIVA TUNJA (GUS)", fecha:"13 jul 2026 · 1:50 pm", resp:"Laura Pacheco", done:true},
+    {n:"Consolidación", loc:"551 - DEREK VIVA TUNJA (GUS)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-10480", tipo:"CEDI → Tienda", origen:"CEDI Bucaramanga", destino:"Tienda Piedecuesta", region:"Norte", zona:"Zona Sur", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:6, paquetes:18, motivo:"Reposición de inventario", etapas:[
-    {n:"Despacho", loc:"CEDI Bucaramanga", fecha:"15 jul 2026 · 8:20 am", resp:"Luz Anyely Sanabria", done:true},
-    {n:"Recepción en destino", loc:"Tienda Piedecuesta", fecha:"16 jul 2026 · 10:05 am", resp:"Camila Rueda", done:true},
-    {n:"Consolidación", loc:"Tienda Piedecuesta", fecha:"Pendiente", resp:"—", done:false, current:true},
+  {id:"TR-20008", tipo:"CEDI → Tienda", origen:"CEDI Barranquilla", destino:"524 - DEREK GRAN PLAZA DEL SOL (BAQ)", regional:"Reg Norte", ciudad:"BARRANQUILLA", zona:"Andrea Moreno", fDespacho:"19 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:2, paquetes:9, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"BAQ-221", valorMercancia:2110000, etapas:[
+    {n:"Despacho", loc:"CEDI Barranquilla", fecha:"19 jul 2026 · 8:40 am", resp:"Operario CEDI Barranquilla", done:true},
+    {n:"Recepción en destino", loc:"524 - DEREK GRAN PLAZA DEL SOL (BAQ)", fecha:"19 jul 2026 · 11:05 am", resp:"Andrea Moreno", done:true},
+    {n:"Consolidación", loc:"524 - DEREK GRAN PLAZA DEL SOL (BAQ)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-10481", tipo:"CEDI → Tienda", origen:"CEDI Bucaramanga", destino:"Tienda Real de Minas", region:"Norte", zona:"Zona Sur", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:9, motivo:"Surtido colección nueva", etapas:[
-    {n:"Despacho", loc:"CEDI Bucaramanga", fecha:"20 jul 2026 · 2:40 pm", resp:"Luz Anyely Sanabria", done:true},
-    {n:"Recepción en destino", loc:"Tienda Real de Minas", fecha:"En tránsito", resp:"—", done:false, current:true},
-    {n:"Consolidación", loc:"Tienda Real de Minas", fecha:"Pendiente", resp:"—", done:false},
+  {id:"TR-20009", tipo:"Tienda → Tienda", origen:"539 - DEREK ALEGRA (BAQ)", destino:"541 - STIRPE ALEGRA (BAQ)", regional:"Reg Norte", ciudad:"BARRANQUILLA", zona:"Andrea Moreno", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:7, motivo:"Balanceo de inventario", transportadora:"Vehículo propio", placa:"BAQ-118", valorMercancia:1560000, etapas:[
+    {n:"Despacho", loc:"539 - DEREK ALEGRA (BAQ)", fecha:"20 jul 2026 · 3:10 pm", resp:"Andrea Moreno", done:true},
+    {n:"Recepción en destino", loc:"541 - STIRPE ALEGRA (BAQ)", fecha:"En tránsito", resp:"—", done:false, current:true},
+    {n:"Consolidación", loc:"541 - STIRPE ALEGRA (BAQ)", fecha:"Pendiente", resp:"—", done:false},
   ]},
-  {id:"TR-10482", tipo:"Tienda → Tienda", origen:"Tienda Piedecuesta", destino:"Tienda Real de Minas", region:"Norte", zona:"Zona Sur", fDespacho:"11 jul 2026", fRecepcion:"12 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:9, paquetes:7, motivo:"Balanceo de inventario", etapas:[
-    {n:"Despacho", loc:"Tienda Piedecuesta", fecha:"11 jul 2026 · 1:10 pm", resp:"Camila Rueda", done:true},
-    {n:"Recepción en destino", loc:"Tienda Real de Minas", fecha:"12 jul 2026 · 9:40 am", resp:"Daniel Peña", done:true},
-    {n:"Consolidación", loc:"Tienda Real de Minas", fecha:"Pendiente", resp:"—", done:false, current:true},
+  {id:"TR-20010", tipo:"CEDI → Tienda", origen:"CEDI Valledupar", destino:"833 - DEREK MAYALES (VUP)", regional:"Reg Norte", ciudad:"VALLEDUPAR", zona:"Marelyn Montejo", fDespacho:"10 jul 2026", fRecepcion:"11 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:11, paquetes:19, motivo:"Reposición de inventario", transportadora:"Interrapidísimo", placa:"VUP-076", valorMercancia:6020000, etapas:[
+    {n:"Despacho", loc:"CEDI Valledupar", fecha:"10 jul 2026 · 8:00 am", resp:"Operario CEDI Valledupar", done:true},
+    {n:"Recepción en destino", loc:"833 - DEREK MAYALES (VUP)", fecha:"11 jul 2026 · 10:40 am", resp:"Marelyn Montejo", done:true},
+    {n:"Consolidación", loc:"833 - DEREK MAYALES (VUP)", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TR-20011", tipo:"CEDI → Tienda", origen:"CEDI Armenia", destino:"872 - STIRPE 1 CRA.14 (AXM)", regional:"Reg Occidente 1", ciudad:"ARMENIA", zona:"Abraham Ortega", fDespacho:"16 jul 2026", fRecepcion:"17 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:5, paquetes:10, motivo:"Surtido colección nueva", transportadora:"Coordinadora", placa:"AXM-303", valorMercancia:3870000, etapas:[
+    {n:"Despacho", loc:"CEDI Armenia", fecha:"16 jul 2026 · 9:20 am", resp:"Operario CEDI Armenia", done:true},
+    {n:"Recepción en destino", loc:"872 - STIRPE 1 CRA.14 (AXM)", fecha:"17 jul 2026 · 12:00 pm", resp:"Abraham Ortega", done:true},
+    {n:"Consolidación", loc:"872 - STIRPE 1 CRA.14 (AXM)", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TR-20012", tipo:"Tienda → Tienda", origen:"887 - STIRPE CRA.23 (MZL)", destino:"888 - DEREK CRA.22 (MZL)", regional:"Reg Occidente 1", ciudad:"MANIZALES", zona:"Brandon Torres", fDespacho:"19 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:2, paquetes:4, motivo:"Traslado por talla faltante", transportadora:"Vehículo propio", placa:"MZL-045", valorMercancia:720000, etapas:[
+    {n:"Despacho", loc:"887 - STIRPE CRA.23 (MZL)", fecha:"19 jul 2026 · 10:30 am", resp:"Brandon Torres", done:true},
+    {n:"Recepción en destino", loc:"888 - DEREK CRA.22 (MZL)", fecha:"19 jul 2026 · 12:15 pm", resp:"Brandon Torres", done:true},
+    {n:"Consolidación", loc:"888 - DEREK CRA.22 (MZL)", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TR-20013", tipo:"CEDI → Tienda", origen:"CEDI Pereira", destino:"240 - STIRPE COMERCIO (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Angela Martinez", fDespacho:"7 jul 2026", fRecepcion:"8 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:14, paquetes:25, motivo:"Reposición de inventario", transportadora:"Envía", placa:"PEI-556", valorMercancia:7340000, etapas:[
+    {n:"Despacho", loc:"CEDI Pereira", fecha:"7 jul 2026 · 7:50 am", resp:"Operario CEDI Pereira", done:true},
+    {n:"Recepción en destino", loc:"240 - STIRPE COMERCIO (PEI)", fecha:"8 jul 2026 · 11:20 am", resp:"Angela Martinez", done:true},
+    {n:"Consolidación", loc:"240 - STIRPE COMERCIO (PEI)", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TR-20014", tipo:"Tienda → Tienda", origen:"810 - DEREK ARBOLEDA (PEI)", destino:"824 - STIRPE ARBOLEDA (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Braulio Calderon", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:6, paquetes:8, motivo:"Balanceo por talla faltante", transportadora:"Vehículo propio", placa:"PEI-201", valorMercancia:1980000, etapas:[
+    {n:"Despacho", loc:"810 - DEREK ARBOLEDA (PEI)", fecha:"15 jul 2026 · 2:40 pm", resp:"Braulio Calderon", done:true},
+    {n:"Recepción en destino", loc:"824 - STIRPE ARBOLEDA (PEI)", fecha:"16 jul 2026 · 9:15 am", resp:"Braulio Calderon", done:true},
+    {n:"Consolidación", loc:"824 - STIRPE ARBOLEDA (PEI)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
 ];
 
-const ROLE_SCOPE = {
-  zona:     {label:"Jefe de Zona · Zona Norte", filter: t => t.zona === "Zona Norte"},
-  regional: {label:"Jefe Regional · Región Norte", filter: t => t.region === "Norte"},
-  gerencia: {label:"Gerencia · Todas las regiones", filter: t => true},
-};
-
-let currentRole = "zona";
 let currentTab = "dash";
 let currentDetailId = null;
 let currentBodega = null;
 let previousTab = "dash";
 let searchQuery = "";
 let sortOrder = "old"; // 'old' = más antiguo primero (más días), 'new' = más reciente primero
+let minDias = 10; // umbral de días para ver traslados atrasados: 10, 5 o 2
 
-/* ---------- Navegación jerárquica: Región → Zona → Tienda ----------
-   Gerencia arranca viendo regiones. Regional arranca viendo las zonas de su región.
-   Jefe de Zona arranca viendo directamente las tiendas de su zona (no necesita más niveles). */
-const LEVELS = ["region","zona","tienda"];
-let drillPath = []; // [{level:'region', value:'Norte'}, {level:'zona', value:'Zona Sur'}, ...]
+/* ---------- Navegación jerárquica: Regional → Ciudad → Zona (Jefe) → Bodega ---------- */
+const LEVELS = ["regional","ciudad","zona","bodega"];
+let drillPath = []; // [{level:'regional', value:'Reg Centro'}, {level:'ciudad', value:'BOGOTA'}, ...]
 
 function baseLevelForRole(){
-  if(currentRole === "gerencia") return "region";
-  if(currentRole === "regional") return "zona";
-  return "tienda"; // jefe de zona
+  return "regional";
 }
 function currentDrillLevel(){
   const start = LEVELS.indexOf(baseLevelForRole());
@@ -378,25 +373,27 @@ function currentDrillLevel(){
 function drillFilteredTraslados(){
   let list = scopedTraslados();
   drillPath.forEach(step=>{
-    if(step.level === "region") list = list.filter(t => t.region === step.value);
+    if(step.level === "regional") list = list.filter(t => t.regional === step.value);
+    if(step.level === "ciudad") list = list.filter(t => t.ciudad === step.value);
     if(step.level === "zona") list = list.filter(t => t.zona === step.value);
   });
   return list;
 }
 function buildGroups(list, level){
-  const keyFn = level==="region" ? t=>t.region : level==="zona" ? t=>t.zona : t=>t.destino;
+  const keyFn = level==="regional" ? t=>t.regional : level==="ciudad" ? t=>t.ciudad : level==="zona" ? t=>t.zona : t=>t.destino;
   const map = {};
   list.forEach(t=>{
     const k = keyFn(t);
-    if(!map[k]) map[k] = {name:k, total:0, pend:0, alert:0};
+    if(!map[k]) map[k] = {name:k, total:0, pend:0, alert:0, transito:0};
     map[k].total++;
     if(t.estado === "pend_consolidar"){ map[k].pend++; if(t.dias >= 10) map[k].alert++; }
+    if(t.estado === "en_transito") map[k].transito++;
   });
   return Object.values(map).sort((a,b)=> b.pend - a.pend || b.total - a.total);
 }
 function drillInto(name){
   const level = currentDrillLevel();
-  if(level === "tienda"){ openBodega(name); return; }
+  if(level === "bodega"){ openBodega(name); return; }
   drillPath.push({level, value:name});
   render();
 }
@@ -406,29 +403,29 @@ function crumbClick(idx){
 }
 function renderHierarchyExplorer(){
   const level = currentDrillLevel();
-  const base = baseLevelForRole();
   const list = drillFilteredTraslados();
   const groups = buildGroups(list, level);
   const maxPend = Math.max(1, ...groups.map(g=>g.pend));
 
-  let crumbsHTML = "";
-  if(base !== "tienda"){
-    const rootLabel = base === "region" ? "Todas las regiones" : "Zonas de tu región";
-    const crumbs = [{label: rootLabel}].concat(drillPath.map(d=>({label:d.value})));
-    crumbsHTML = `<div class="crumbs">` + crumbs.map((c,i)=>{
-      const isActive = i === crumbs.length - 1;
-      const clickIdx = i - 1;
-      return `<span class="crumb ${isActive?'active':''}" onclick="crumbClick(${clickIdx})">${c.label}</span>` +
-             (i < crumbs.length - 1 ? `<span class="crumb-sep">›</span>` : "");
-    }).join("") + `</div>`;
-  }
+  const rootLabel = "Todas las regionales";
+  const crumbs = [{label: rootLabel}].concat(drillPath.map(d=>({label:d.value})));
+  const crumbsHTML = `<div class="crumbs">` + crumbs.map((c,i)=>{
+    const isActive = i === crumbs.length - 1;
+    const clickIdx = i - 1;
+    return `<span class="crumb ${isActive?'active':''}" onclick="crumbClick(${clickIdx})">${c.label}</span>` +
+           (i < crumbs.length - 1 ? `<span class="crumb-sep">›</span>` : "");
+  }).join("") + `</div>`;
 
-  const levelTitle = level === "region" ? "Regiones" : level === "zona" ? "Zonas" : "Tiendas";
+  const levelTitle = level === "regional" ? "Regionales" : level === "ciudad" ? "Ciudades" : level === "zona" ? "Zonas (Jefes)" : "Bodegas";
   const rowsHTML = groups.length ? groups.map(g => `
     <div class="rank-row" onclick="drillInto('${g.name.replace(/'/g,"\\'")}')">
       <div class="rank-top">
         <div class="rank-name">${g.name} <span class="chev">›</span></div>
-        <div class="rank-count">${g.pend}${g.alert>0 ? ` <span style="color:var(--red);font-weight:800;">(${g.alert} 🔴)</span>` : ""}</div>
+        ${g.alert>0 ? `<span class="rank-alert-badge">${g.alert} 🔴</span>` : ""}
+      </div>
+      <div class="rank-stats">
+        <span class="stat-item stat-pend">📦 <b>${g.pend}</b> por consolidar</span>
+        <span class="stat-item stat-transito">🚚 <b>${g.transito}</b> en tránsito</span>
       </div>
       <div class="bar-bg"><div class="bar-fill ${g.alert>0?'alert':''}" style="width:${(g.pend/maxPend)*100}%"></div></div>
     </div>
@@ -442,7 +439,7 @@ function renderHierarchyExplorer(){
 }
 
 function scopedTraslados(){
-  return TRASLADOS.filter(ROLE_SCOPE[currentRole].filter);
+  return TRASLADOS;
 }
 function pendientes(list){
   return (list || scopedTraslados()).filter(t => t.estado === "pend_consolidar");
@@ -465,24 +462,14 @@ function estadoLabel(t){
   return "Recepcionado";
 }
 
-function setRole(v){
-  currentRole = v;
-  document.getElementById("roleValue").textContent = ROLE_SCOPE[v].label;
-  currentTab = "dash";
-  currentBodega = null;
-  drillPath = [];
-  document.getElementById("tabBodega").style.display = "none";
-  document.getElementById("tabDet").style.display = "none";
-  updateTabsUI();
-  render();
-}
-
 function updateTabsUI(){
   document.getElementById("tabDash").classList.toggle("active", currentTab==="dash");
   document.getElementById("tabList").classList.toggle("active", currentTab==="list");
   document.getElementById("tabBodega").classList.toggle("active", currentTab==="bodega");
   document.getElementById("tabDet").classList.toggle("active", currentTab==="detail");
-  document.getElementById("topBack").style.visibility = (currentTab==="dash") ? "hidden" : "visible";
+  document.getElementById("tabBodega").style.display = (currentTab === "bodega") ? "block" : "none";
+  document.getElementById("tabDet").style.display = (currentTab === "detail") ? "block" : "none";
+  document.getElementById("topBack").style.visibility = (currentTab==="dash" && drillPath.length===0) ? "hidden" : "visible";
 }
 
 function showTab(t){
@@ -493,10 +480,14 @@ function showTab(t){
 }
 
 function handleTopBack(){
-  if(currentTab === "detail"){ showTab(previousTab); }
-  else if(currentTab === "bodega"){ showTab("dash"); }
-  else if(currentTab === "list"){ showTab("dash"); }
-  else { showTab("dash"); }
+  if(currentTab === "detail"){ showTab(previousTab); return; }
+  if(currentTab === "bodega"){ showTab("dash"); return; }
+  if(currentTab === "list"){ showTab("dash"); return; }
+  if(currentTab === "dash" && drillPath.length > 0){
+    drillPath.pop();
+    render();
+    return;
+  }
 }
 
 function openDetail(id){
@@ -518,7 +509,7 @@ function openBodega(nombre){
 }
 
 function getFilteredSorted(list){
-  let out = list;
+  let out = list.filter(passesThreshold);
   if(searchQuery.trim()){
     const q = searchQuery.toLowerCase();
     out = out.filter(t =>
@@ -546,6 +537,33 @@ function setSort(o){
   }
 }
 
+function setMinDias(v){
+  minDias = v;
+  document.querySelectorAll(".thresh-chip").forEach(el=>{
+    el.classList.toggle("on", el.getAttribute("data-val") == v);
+  });
+  if(currentTab === "list") updateRows();
+  else if(currentTab === "bodega") updateRowsBodega();
+  else render();
+}
+
+function thresholdChipsHTML(){
+  return `
+    <div class="thresh-row">
+      <div class="thresh-chip thresh-alert ${minDias===10?'on':''}" data-val="10" onclick="setMinDias(10)">10+ días</div>
+      <div class="thresh-chip thresh-warn ${minDias===5?'on':''}" data-val="5" onclick="setMinDias(5)">5-9 días</div>
+      <div class="thresh-chip thresh-ok ${minDias===2?'on':''}" data-val="2" onclick="setMinDias(2)">2-4 días</div>
+    </div>
+  `;
+}
+
+function passesThreshold(t){
+  if(t.estado !== "pend_consolidar") return true;
+  if(minDias === 10) return t.dias >= 10;
+  if(minDias === 5) return t.dias >= 5 && t.dias < 10;
+  return t.dias >= 2 && t.dias < 5;
+}
+
 function rowItemHTML(t){
   return `
     <div class="row-item" onclick="openDetail('${t.id}')">
@@ -568,16 +586,9 @@ function renderDashboard(){
   const pend = pendientes(scoped);
   const total = pend.length;
   const alertas = pend.filter(t => t.dias >= 10).length;
-  const pctSemana = scoped.length ? Math.round((scoped.filter(t=>t.estado!=="pend_consolidar" && t.estado!=="en_transito").length / scoped.length) * 100) : 0;
+  const avgDias = pend.length ? Math.round(pend.reduce((a,t)=>a+t.dias,0)/pend.length) : 0;
 
   let html = `
-    <div class="filters">
-      <div class="chip on">Todos</div>
-      <div class="chip">Bodega destino</div>
-      <div class="chip">Tipo traslado</div>
-      <div class="chip">📅 Fechas</div>
-    </div>
-
     <div class="kpi-grid">
       <div class="kpi">
         <div class="k-label">📦 Sin consolidar</div>
@@ -590,21 +601,26 @@ function renderDashboard(){
         <div class="k-sub up-green">hacia destino</div>
       </div>
       <div class="kpi">
-        <div class="k-label">✅ Consolidados sem.</div>
-        <div class="k-value">${pctSemana}%</div>
-        <div class="k-sub up-green">del total</div>
+        <div class="k-label">⏱ Prom. días pend.</div>
+        <div class="k-value">${avgDias}d</div>
+        <div class="k-sub ${avgDias>=10?'up-red':avgDias>=5?'up-amber':'up-green'}">tiempo promedio</div>
       </div>
     </div>
 
     ${renderHierarchyExplorer()}
-
-    <div class="section-title">Más antiguos sin consolidar <span class="see-all" onclick="showTab('list')">Ver todos ›</span></div>
-    <div class="rows-wrap">
   `;
 
-  const top3 = [...pend].sort((a,b)=>b.dias-a.dias).slice(0,3);
-  html += top3.length ? top3.map(rowItemHTML).join("") : `<div class="empty-note">Todo al día 🎉</div>`;
-  html += `</div>`;
+  if(drillPath.length === 0){
+    html += `
+      <div class="section-title">Traslados atrasados <span class="see-all" onclick="showTab('list')">Ver todos ›</span></div>
+      ${thresholdChipsHTML()}
+      <div class="rows-wrap">
+    `;
+    const filteredAtrasados = pend.filter(passesThreshold).sort((a,b)=>b.dias-a.dias);
+    const top3 = filteredAtrasados.slice(0,3);
+    html += top3.length ? top3.map(rowItemHTML).join("") : `<div class="empty-note">Ningún traslado en este rango de días 🎉</div>`;
+    html += `</div>`;
+  }
 
   document.getElementById("content").innerHTML = html;
 }
@@ -624,6 +640,7 @@ function renderList(){
         <span class="search-icon">🔍</span>
         <input class="search-input" placeholder="Buscar por ID, tienda o bodega..." oninput="onSearchInput(this.value)">
       </div>
+      ${thresholdChipsHTML()}
       <div class="sort-row">
         <div class="sort-chip on" id="sortOld" onclick="setSort('old')">Más antiguo primero</div>
         <div class="sort-chip" id="sortNew" onclick="setSort('new')">Más reciente primero</div>
@@ -725,8 +742,13 @@ function renderDetail(){
       <div class="detail-grid">
         <div><div class="lbl">Estado</div><div class="val">${estadoLabel(t)}</div></div>
         <div><div class="lbl">Paquetes</div><div class="val">${t.paquetes}</div></div>
-        <div><div class="lbl">Motivo</div><div class="val">${t.motivo}</div></div>
-        <div><div class="lbl">Zona</div><div class="val">${t.zona}</div></div>
+        <div><div class="lbl">Regional</div><div class="val">${t.regional}</div></div>
+        <div><div class="lbl">Ciudad</div><div class="val">${t.ciudad}</div></div>
+        <div><div class="lbl">Zona (Jefe)</div><div class="val">${t.zona}</div></div>
+        <div><div class="lbl">Transportadora</div><div class="val">${t.transportadora}</div></div>
+        <div><div class="lbl">Placa</div><div class="val">${t.placa}</div></div>
+        <div><div class="lbl">Valor mercancía</div><div class="val">$${t.valorMercancia.toLocaleString('es-CO')}</div></div>
+        <div style="grid-column:1/-1;"><div class="lbl">Motivo</div><div class="val">${t.motivo}</div></div>
       </div>
     </div>
 
@@ -742,6 +764,7 @@ function renderDetail(){
 }
 
 function render(){
+  updateTabsUI();
   if(currentTab === "dash") renderDashboard();
   else if(currentTab === "list") renderList();
   else if(currentTab === "bodega") renderBodega();
