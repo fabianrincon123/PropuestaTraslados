@@ -75,6 +75,18 @@
   }
   .tab.active{ background:var(--lime); color:#0A1520; }
 
+  .segment-tabs{
+    display:flex; margin-bottom:14px;
+    background:var(--card-alt);
+    border-radius:14px; padding:4px; gap:4px;
+  }
+  .segment-tab{
+    flex:1; text-align:center; padding:8px 4px; border-radius:11px;
+    font-size:12.5px; font-weight:700; color:var(--text-dim); cursor:pointer;
+    transition:.15s;
+  }
+  .segment-tab.on{ background:var(--lime); color:#0A1520; }
+
   .content{ padding:0 16px 24px 16px; overflow-y:auto; flex:1; }
 
   /* Filters: envuelven en varias líneas, nunca se salen de pantalla ni requieren scroll horizontal */
@@ -122,8 +134,6 @@
   .rank-top{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; gap:8px;}
   .rank-name{ font-size:13px; font-weight:700; display:flex; align-items:center; gap:5px; }
   .rank-name .chev{ color:var(--text-dim2); font-size:12px; }
-  .rank-count{ font-size:13px; font-weight:800; flex-shrink:0; }
-  .rank-alert-badge{ font-size:11px; font-weight:800; color:var(--red); flex-shrink:0; }
   .rank-stats{ display:flex; flex-wrap:wrap; gap:12px; margin-bottom:8px; }
   .stat-item{ font-size:11px; color:var(--text-dim); display:flex; align-items:center; gap:4px; }
   .stat-item b{ color:var(--text); font-weight:800; font-size:12px; }
@@ -278,8 +288,8 @@
 <script>
 /* ---------- DATOS (basados en la estructura real Regional > Ciudad > Zona/Jefe > Bodega) ---------- */
 const TRASLADOS = [
-  {id:"TR-20001", tipo:"CEDI → Tienda", origen:"CEDI Bogotá", destino:"532 - STIRPE TUNAL (BOG)", regional:"Reg Centro", ciudad:"BOGOTA", zona:"Cristina Mancera", fDespacho:"9 jul 2026", fRecepcion:"10 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:12, paquetes:28, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"TBH-045", valorMercancia:8450000, etapas:[
-    {n:"Despacho", loc:"CEDI Bogotá", fecha:"9 jul 2026 · 8:10 am", resp:"Operario CEDI Bogotá", done:true},
+  {id:"TR-20001", tipo:"Tienda → Tienda", origen:"790 - DEREK GRAN ESTACION (BOG)", destino:"532 - STIRPE TUNAL (BOG)", regional:"Reg Centro", ciudad:"BOGOTA", zona:"Cristina Mancera", fDespacho:"9 jul 2026", fRecepcion:"10 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:12, paquetes:28, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"TBH-045", valorMercancia:8450000, etapas:[
+    {n:"Despacho", loc:"790 - DEREK GRAN ESTACION (BOG)", fecha:"9 jul 2026 · 8:10 am", resp:"Cristina Mancera", done:true},
     {n:"Recepción en destino", loc:"532 - STIRPE TUNAL (BOG)", fecha:"10 jul 2026 · 11:30 am", resp:"Cristina Mancera", done:true},
     {n:"Consolidación", loc:"532 - STIRPE TUNAL (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
@@ -288,18 +298,18 @@ const TRASLADOS = [
     {n:"Recepción en destino", loc:"546 - STIRPE ENSUEÑO (BOG)", fecha:"18 jul 2026 · 3:40 pm", resp:"Cristina Mancera", done:true},
     {n:"Consolidación", loc:"546 - STIRPE ENSUEÑO (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20003", tipo:"CEDI → Tienda", origen:"CEDI Bogotá", destino:"825 - STIRPE VIVA (VVC)", regional:"Reg Centro", ciudad:"VILLAVICENCIO", zona:"Fatima Rojas", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:7, paquetes:15, motivo:"Surtido colección nueva", transportadora:"Interrapidísimo", placa:"WKD-330", valorMercancia:5230000, etapas:[
-    {n:"Despacho", loc:"CEDI Bogotá", fecha:"15 jul 2026 · 7:45 am", resp:"Operario CEDI Bogotá", done:true},
+  {id:"TR-20003", tipo:"Tienda → Tienda", origen:"871 - TRAVEL VIVA (VVC)", destino:"825 - STIRPE VIVA (VVC)", regional:"Reg Centro", ciudad:"VILLAVICENCIO", zona:"Fatima Rojas", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:7, paquetes:15, motivo:"Surtido colección nueva", transportadora:"Interrapidísimo", placa:"WKD-330", valorMercancia:5230000, etapas:[
+    {n:"Despacho", loc:"871 - TRAVEL VIVA (VVC)", fecha:"15 jul 2026 · 7:45 am", resp:"Fatima Rojas", done:true},
     {n:"Recepción en destino", loc:"825 - STIRPE VIVA (VVC)", fecha:"16 jul 2026 · 10:15 am", resp:"Fatima Rojas", done:true},
     {n:"Consolidación", loc:"825 - STIRPE VIVA (VVC)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20004", tipo:"Tienda → CEDI", origen:"869 - FACTORY CENTRO (VVC)", destino:"CEDI Bogotá", regional:"Reg Centro", ciudad:"VILLAVICENCIO", zona:"Fatima Rojas", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:20, motivo:"Devolución de temporada", transportadora:"Envía", placa:"RMX-880", valorMercancia:4780000, etapas:[
+  {id:"TR-20004", tipo:"Tienda → Tienda", origen:"869 - FACTORY CENTRO (VVC)", destino:"883 - STIRPE UNICENTRO (VVC)", regional:"Reg Centro", ciudad:"VILLAVICENCIO", zona:"Fatima Rojas", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:20, motivo:"Devolución de temporada", transportadora:"Envía", placa:"RMX-880", valorMercancia:4780000, etapas:[
     {n:"Despacho", loc:"869 - FACTORY CENTRO (VVC)", fecha:"20 jul 2026 · 4:20 pm", resp:"Fatima Rojas", done:true},
-    {n:"Recepción en destino", loc:"CEDI Bogotá", fecha:"En tránsito", resp:"—", done:false, current:true},
-    {n:"Consolidación", loc:"CEDI Bogotá", fecha:"Pendiente", resp:"—", done:false},
+    {n:"Recepción en destino", loc:"883 - STIRPE UNICENTRO (VVC)", fecha:"En tránsito", resp:"—", done:false, current:true},
+    {n:"Consolidación", loc:"883 - STIRPE UNICENTRO (VVC)", fecha:"Pendiente", resp:"—", done:false},
   ]},
-  {id:"TR-20005", tipo:"CEDI → Tienda", origen:"CEDI Bogotá", destino:"840 - DEREK SANTAFE (BOG)", regional:"Reg Centro1", ciudad:"BOGOTA", zona:"Johana Avendaño", fDespacho:"5 jul 2026", fRecepcion:"6 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:16, paquetes:34, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"TBH-045", valorMercancia:9900000, etapas:[
-    {n:"Despacho", loc:"CEDI Bogotá", fecha:"5 jul 2026 · 8:00 am", resp:"Operario CEDI Bogotá", done:true},
+  {id:"TR-20005", tipo:"Tienda → Tienda", origen:"894 - STIRPE TITAN (BOG)", destino:"840 - DEREK SANTAFE (BOG)", regional:"Reg Centro1", ciudad:"BOGOTA", zona:"Johana Avendaño", fDespacho:"5 jul 2026", fRecepcion:"6 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:16, paquetes:34, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"TBH-045", valorMercancia:9900000, etapas:[
+    {n:"Despacho", loc:"894 - STIRPE TITAN (BOG)", fecha:"5 jul 2026 · 8:00 am", resp:"Johana Avendaño", done:true},
     {n:"Recepción en destino", loc:"840 - DEREK SANTAFE (BOG)", fecha:"6 jul 2026 · 12:10 pm", resp:"Johana Avendaño", done:true},
     {n:"Consolidación", loc:"840 - DEREK SANTAFE (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
@@ -308,13 +318,8 @@ const TRASLADOS = [
     {n:"Recepción en destino", loc:"412 - U82 NUESTRO (BOG)", fecha:"19 jul 2026 · 9:00 am", resp:"Luis Guanchez", done:true},
     {n:"Consolidación", loc:"412 - U82 NUESTRO (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20007", tipo:"CEDI → Tienda", origen:"CEDI Bogotá", destino:"551 - DEREK VIVA TUNJA (GUS)", regional:"Reg Centro1", ciudad:"TUNJA", zona:"Laura Pacheco", fDespacho:"12 jul 2026", fRecepcion:"13 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:9, paquetes:12, motivo:"Surtido colección nueva", transportadora:"Envía", placa:"RMX-880", valorMercancia:3340000, etapas:[
-    {n:"Despacho", loc:"CEDI Bogotá", fecha:"12 jul 2026 · 9:30 am", resp:"Operario CEDI Bogotá", done:true},
-    {n:"Recepción en destino", loc:"551 - DEREK VIVA TUNJA (GUS)", fecha:"13 jul 2026 · 1:50 pm", resp:"Laura Pacheco", done:true},
-    {n:"Consolidación", loc:"551 - DEREK VIVA TUNJA (GUS)", fecha:"Pendiente", resp:"—", done:false, current:true},
-  ]},
-  {id:"TR-20008", tipo:"CEDI → Tienda", origen:"CEDI Barranquilla", destino:"524 - DEREK GRAN PLAZA DEL SOL (BAQ)", regional:"Reg Norte", ciudad:"BARRANQUILLA", zona:"Andrea Moreno", fDespacho:"19 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:2, paquetes:9, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"BAQ-221", valorMercancia:2110000, etapas:[
-    {n:"Despacho", loc:"CEDI Barranquilla", fecha:"19 jul 2026 · 8:40 am", resp:"Operario CEDI Barranquilla", done:true},
+  {id:"TR-20008", tipo:"Tienda → Tienda", origen:"884 - STIRPE G. PLAZA DEL SOL (BAQ)", destino:"524 - DEREK GRAN PLAZA DEL SOL (BAQ)", regional:"Reg Norte", ciudad:"BARRANQUILLA", zona:"Andrea Moreno", fDespacho:"19 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:2, paquetes:9, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"BAQ-221", valorMercancia:2110000, etapas:[
+    {n:"Despacho", loc:"884 - STIRPE G. PLAZA DEL SOL (BAQ)", fecha:"19 jul 2026 · 8:40 am", resp:"Andrea Moreno", done:true},
     {n:"Recepción en destino", loc:"524 - DEREK GRAN PLAZA DEL SOL (BAQ)", fecha:"19 jul 2026 · 11:05 am", resp:"Andrea Moreno", done:true},
     {n:"Consolidación", loc:"524 - DEREK GRAN PLAZA DEL SOL (BAQ)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
@@ -323,13 +328,13 @@ const TRASLADOS = [
     {n:"Recepción en destino", loc:"541 - STIRPE ALEGRA (BAQ)", fecha:"En tránsito", resp:"—", done:false, current:true},
     {n:"Consolidación", loc:"541 - STIRPE ALEGRA (BAQ)", fecha:"Pendiente", resp:"—", done:false},
   ]},
-  {id:"TR-20010", tipo:"CEDI → Tienda", origen:"CEDI Valledupar", destino:"833 - DEREK MAYALES (VUP)", regional:"Reg Norte", ciudad:"VALLEDUPAR", zona:"Marelyn Montejo", fDespacho:"10 jul 2026", fRecepcion:"11 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:11, paquetes:19, motivo:"Reposición de inventario", transportadora:"Interrapidísimo", placa:"VUP-076", valorMercancia:6020000, etapas:[
-    {n:"Despacho", loc:"CEDI Valledupar", fecha:"10 jul 2026 · 8:00 am", resp:"Operario CEDI Valledupar", done:true},
+  {id:"TR-20010", tipo:"Tienda → Tienda", origen:"868 - STIRPE CENTRO CRA 7 (VUP)", destino:"833 - DEREK MAYALES (VUP)", regional:"Reg Norte", ciudad:"VALLEDUPAR", zona:"Marelyn Montejo", fDespacho:"10 jul 2026", fRecepcion:"11 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:11, paquetes:19, motivo:"Reposición de inventario", transportadora:"Interrapidísimo", placa:"VUP-076", valorMercancia:6020000, etapas:[
+    {n:"Despacho", loc:"868 - STIRPE CENTRO CRA 7 (VUP)", fecha:"10 jul 2026 · 8:00 am", resp:"Marelyn Montejo", done:true},
     {n:"Recepción en destino", loc:"833 - DEREK MAYALES (VUP)", fecha:"11 jul 2026 · 10:40 am", resp:"Marelyn Montejo", done:true},
     {n:"Consolidación", loc:"833 - DEREK MAYALES (VUP)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20011", tipo:"CEDI → Tienda", origen:"CEDI Armenia", destino:"872 - STIRPE 1 CRA.14 (AXM)", regional:"Reg Occidente 1", ciudad:"ARMENIA", zona:"Abraham Ortega", fDespacho:"16 jul 2026", fRecepcion:"17 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:5, paquetes:10, motivo:"Surtido colección nueva", transportadora:"Coordinadora", placa:"AXM-303", valorMercancia:3870000, etapas:[
-    {n:"Despacho", loc:"CEDI Armenia", fecha:"16 jul 2026 · 9:20 am", resp:"Operario CEDI Armenia", done:true},
+  {id:"TR-20011", tipo:"Tienda → Tienda", origen:"878 - STIRPE 3 CRA.14X19 (AXM)", destino:"872 - STIRPE 1 CRA.14 (AXM)", regional:"Reg Occidente 1", ciudad:"ARMENIA", zona:"Abraham Ortega", fDespacho:"16 jul 2026", fRecepcion:"17 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:5, paquetes:10, motivo:"Surtido colección nueva", transportadora:"Coordinadora", placa:"AXM-303", valorMercancia:3870000, etapas:[
+    {n:"Despacho", loc:"878 - STIRPE 3 CRA.14X19 (AXM)", fecha:"16 jul 2026 · 9:20 am", resp:"Abraham Ortega", done:true},
     {n:"Recepción en destino", loc:"872 - STIRPE 1 CRA.14 (AXM)", fecha:"17 jul 2026 · 12:00 pm", resp:"Abraham Ortega", done:true},
     {n:"Consolidación", loc:"872 - STIRPE 1 CRA.14 (AXM)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
@@ -338,8 +343,8 @@ const TRASLADOS = [
     {n:"Recepción en destino", loc:"888 - DEREK CRA.22 (MZL)", fecha:"19 jul 2026 · 12:15 pm", resp:"Brandon Torres", done:true},
     {n:"Consolidación", loc:"888 - DEREK CRA.22 (MZL)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20013", tipo:"CEDI → Tienda", origen:"CEDI Pereira", destino:"240 - STIRPE COMERCIO (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Angela Martinez", fDespacho:"7 jul 2026", fRecepcion:"8 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:14, paquetes:25, motivo:"Reposición de inventario", transportadora:"Envía", placa:"PEI-556", valorMercancia:7340000, etapas:[
-    {n:"Despacho", loc:"CEDI Pereira", fecha:"7 jul 2026 · 7:50 am", resp:"Operario CEDI Pereira", done:true},
+  {id:"TR-20013", tipo:"Tienda → Tienda", origen:"895 - TRAVEL CENTRO (PEI)", destino:"240 - STIRPE COMERCIO (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Angela Martinez", fDespacho:"7 jul 2026", fRecepcion:"8 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:14, paquetes:25, motivo:"Reposición de inventario", transportadora:"Envía", placa:"PEI-556", valorMercancia:7340000, etapas:[
+    {n:"Despacho", loc:"895 - TRAVEL CENTRO (PEI)", fecha:"7 jul 2026 · 7:50 am", resp:"Angela Martinez", done:true},
     {n:"Recepción en destino", loc:"240 - STIRPE COMERCIO (PEI)", fecha:"8 jul 2026 · 11:20 am", resp:"Angela Martinez", done:true},
     {n:"Consolidación", loc:"240 - STIRPE COMERCIO (PEI)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
@@ -350,6 +355,70 @@ const TRASLADOS = [
   ]},
 ];
 
+/* ---------- Traslados de prueba: Administrativo y CEDI (datos reales de bodegas) ---------- */
+const TRASLADOS_ADMIN = [
+  {id:"TRA-001", tipo:"Administrativo Interno", origen:"961 - GESTION DOCUMENTAL", destino:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", ciudad:"BUCARAMANGA", coordinacion:"Elizabeth Arenas", fDespacho:"6 jul 2026", fRecepcion:"7 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:12, paquetes:6, motivo:"Traslado de archivo por contingencia", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:850000, etapas:[
+    {n:"Despacho", loc:"961 - GESTION DOCUMENTAL", fecha:"6 jul 2026 · 9:10 am", resp:"Elizabeth Arenas", done:true},
+    {n:"Recepción en destino", loc:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", fecha:"7 jul 2026 · 11:00 am", resp:"Paola Gallo", done:true},
+    {n:"Consolidación", loc:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TRA-002", tipo:"Administrativo Interno", origen:"960 - CONTABILIDAD", destino:"956 - FINANCIERA", ciudad:"BUCARAMANGA", coordinacion:"Zully Uni Campos", fDespacho:"18 jul 2026", fRecepcion:"18 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:4, paquetes:3, motivo:"Traslado de soportes contables", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:120000, etapas:[
+    {n:"Despacho", loc:"960 - CONTABILIDAD", fecha:"18 jul 2026 · 2:20 pm", resp:"Zully Uni Campos", done:true},
+    {n:"Recepción en destino", loc:"956 - FINANCIERA", fecha:"18 jul 2026 · 3:45 pm", resp:"Juan Camilo Mejia", done:true},
+    {n:"Consolidación", loc:"956 - FINANCIERA", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TRA-003", tipo:"Administrativo Interno", origen:"975 - AUDITORIA INTERNA", destino:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", ciudad:"BUCARAMANGA", coordinacion:"Paola Gallo", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:2, motivo:"Traslado de evidencias de auditoría", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:60000, etapas:[
+    {n:"Despacho", loc:"975 - AUDITORIA INTERNA", fecha:"20 jul 2026 · 4:00 pm", resp:"Paola Gallo", done:true},
+    {n:"Recepción en destino", loc:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", fecha:"En tránsito", resp:"—", done:false, current:true},
+    {n:"Consolidación", loc:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", fecha:"Pendiente", resp:"—", done:false},
+  ]},
+  {id:"TRA-004", tipo:"Administrativo Interno", origen:"985 - MANTENIMIENTO", destino:"990 - SISTEMAS", ciudad:"BUCARAMANGA", coordinacion:"Elizabeth Arenas", fDespacho:"14 jul 2026", fRecepcion:"15 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:7, paquetes:4, motivo:"Traslado de equipos", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:2300000, etapas:[
+    {n:"Despacho", loc:"985 - MANTENIMIENTO", fecha:"14 jul 2026 · 8:30 am", resp:"Elizabeth Arenas", done:true},
+    {n:"Recepción en destino", loc:"990 - SISTEMAS", fecha:"15 jul 2026 · 10:15 am", resp:"Elizabeth Arenas", done:true},
+    {n:"Consolidación", loc:"990 - SISTEMAS", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TRA-005", tipo:"Administrativo Interno", origen:"987 - SAGRILAFT BG", destino:"1 - GENERAL ADMINISTRATIVO", ciudad:"BUCARAMANGA", coordinacion:"Adriana Pardo", fDespacho:"3 jul 2026", fRecepcion:"4 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:15, paquetes:5, motivo:"Traslado de documentación regulatoria", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:150000, etapas:[
+    {n:"Despacho", loc:"987 - SAGRILAFT BG", fecha:"3 jul 2026 · 9:00 am", resp:"Adriana Pardo", done:true},
+    {n:"Recepción en destino", loc:"1 - GENERAL ADMINISTRATIVO", fecha:"4 jul 2026 · 11:40 am", resp:"Elizabeth Arenas", done:true},
+    {n:"Consolidación", loc:"1 - GENERAL ADMINISTRATIVO", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+];
+
+const TRASLADOS_CEDI = [
+  {id:"TRC-001", tipo:"CEDI Interno", origen:"602 - DEVOLUCIONES POR CALIDAD DE TIENDAS", destino:"603 - GARANTIAS EN ABANDONO", ciudad:"BUCARAMANGA", coordinacion:"Sin asignar", fDespacho:"8 jul 2026", fRecepcion:"9 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:11, paquetes:40, motivo:"Clasificación de devoluciones", transportadora:"Vehículo propio", placa:"CDI-101", valorMercancia:3200000, etapas:[
+    {n:"Despacho", loc:"602 - DEVOLUCIONES POR CALIDAD DE TIENDAS", fecha:"8 jul 2026 · 8:15 am", resp:"Operario CEDI", done:true},
+    {n:"Recepción en destino", loc:"603 - GARANTIAS EN ABANDONO", fecha:"9 jul 2026 · 10:30 am", resp:"Operario CEDI", done:true},
+    {n:"Consolidación", loc:"603 - GARANTIAS EN ABANDONO", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TRC-002", tipo:"CEDI Interno", origen:"718 - TALLERES DE RELOJES", destino:"720 - SEGUNDAS DE TALLERES EN TRANSITO", ciudad:"BUCARAMANGA", coordinacion:"Sin asignar", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:6, paquetes:15, motivo:"Traslado a segundas", transportadora:"Vehículo propio", placa:"CDI-102", valorMercancia:980000, etapas:[
+    {n:"Despacho", loc:"718 - TALLERES DE RELOJES", fecha:"15 jul 2026 · 1:00 pm", resp:"Operario CEDI", done:true},
+    {n:"Recepción en destino", loc:"720 - SEGUNDAS DE TALLERES EN TRANSITO", fecha:"16 jul 2026 · 9:20 am", resp:"Operario CEDI", done:true},
+    {n:"Consolidación", loc:"720 - SEGUNDAS DE TALLERES EN TRANSITO", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TRC-003", tipo:"CEDI Interno", origen:"101 - SEGUNDAS", destino:"103 - PROMOCION", ciudad:"BUCARAMANGA", coordinacion:"Jorge Eduardo Valencia", fDespacho:"18 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:3, paquetes:22, motivo:"Reclasificación a promoción", transportadora:"Vehículo propio", placa:"CDI-103", valorMercancia:4100000, etapas:[
+    {n:"Despacho", loc:"101 - SEGUNDAS", fecha:"18 jul 2026 · 10:00 am", resp:"Jorge Eduardo Valencia", done:true},
+    {n:"Recepción en destino", loc:"103 - PROMOCION", fecha:"19 jul 2026 · 8:45 am", resp:"Jorge Eduardo Valencia", done:true},
+    {n:"Consolidación", loc:"103 - PROMOCION", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TRC-004", tipo:"CEDI Interno", origen:"400 - INSUMOS MERCADEO", destino:"600 - DEVOLUCION CALIDAD EN TRANSITO CLIENTES", ciudad:"BUCARAMANGA", coordinacion:"Yessid Garcés", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:8, motivo:"Traslado de insumos", transportadora:"Vehículo propio", placa:"CDI-104", valorMercancia:560000, etapas:[
+    {n:"Despacho", loc:"400 - INSUMOS MERCADEO", fecha:"20 jul 2026 · 3:30 pm", resp:"Yessid Garcés", done:true},
+    {n:"Recepción en destino", loc:"600 - DEVOLUCION CALIDAD EN TRANSITO CLIENTES", fecha:"En tránsito", resp:"—", done:false, current:true},
+    {n:"Consolidación", loc:"600 - DEVOLUCION CALIDAD EN TRANSITO CLIENTES", fecha:"Pendiente", resp:"—", done:false},
+  ]},
+  {id:"TRC-005", tipo:"CEDI Interno", origen:"601 - DEVOLUCION PROVEEDORES", destino:"104 - CONGELADOS PROMOCION", ciudad:"GIRON", coordinacion:"Monica Castro", fDespacho:"11 jul 2026", fRecepcion:"12 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:9, paquetes:30, motivo:"Traslado a bodega Girón", transportadora:"Vehículo propio", placa:"CDI-105", valorMercancia:5400000, etapas:[
+    {n:"Despacho", loc:"601 - DEVOLUCION PROVEEDORES", fecha:"11 jul 2026 · 8:00 am", resp:"Operario CEDI", done:true},
+    {n:"Recepción en destino", loc:"104 - CONGELADOS PROMOCION", fecha:"12 jul 2026 · 11:15 am", resp:"Monica Castro", done:true},
+    {n:"Consolidación", loc:"104 - CONGELADOS PROMOCION", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TRC-006", tipo:"CEDI Interno", origen:"717 - RECUPERACIONES", destino:"100 - REPOSICION", ciudad:"GIRON", coordinacion:"Elizabeth Arenas", fDespacho:"6 jul 2026", fRecepcion:"7 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:14, paquetes:18, motivo:"Recuperación a reposición", transportadora:"Vehículo propio", placa:"CDI-106", valorMercancia:2750000, etapas:[
+    {n:"Despacho", loc:"717 - RECUPERACIONES", fecha:"6 jul 2026 · 9:40 am", resp:"Juliana Otero", done:true},
+    {n:"Recepción en destino", loc:"100 - REPOSICION", fecha:"7 jul 2026 · 1:05 pm", resp:"Elizabeth Arenas", done:true},
+    {n:"Consolidación", loc:"100 - REPOSICION", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+];
+
+let currentSegment = "tiendas"; // 'tiendas' | 'administrativo' | 'cedi'
+
 let currentTab = "dash";
 let currentDetailId = null;
 let currentBodega = null;
@@ -358,17 +427,19 @@ let searchQuery = "";
 let sortOrder = "old"; // 'old' = más antiguo primero (más días), 'new' = más reciente primero
 let minDias = 10; // umbral de días para ver traslados atrasados: 10, 5 o 2
 
-/* ---------- Navegación jerárquica: Regional → Ciudad → Zona (Jefe) → Bodega ---------- */
-const LEVELS = ["regional","ciudad","zona","bodega"];
+/* ---------- Navegación jerárquica, adaptada al segmento activo ----------
+   Tiendas: Regional → Ciudad → Zona (Jefe) → Bodega
+   Administrativo / CEDI: Ciudad → Coordinación → Bodega */
+const LEVELS_TIENDAS = ["regional","ciudad","zona","bodega"];
+const LEVELS_CATALOGO = ["coordinacion","bodega"];
 let drillPath = []; // [{level:'regional', value:'Reg Centro'}, {level:'ciudad', value:'BOGOTA'}, ...]
 
-function baseLevelForRole(){
-  return "regional";
+function activeLevels(){
+  return currentSegment === "tiendas" ? LEVELS_TIENDAS : LEVELS_CATALOGO;
 }
 function currentDrillLevel(){
-  const start = LEVELS.indexOf(baseLevelForRole());
-  const idx = Math.min(start + drillPath.length, LEVELS.length - 1);
-  return LEVELS[idx];
+  const levels = activeLevels();
+  return levels[Math.min(drillPath.length, levels.length - 1)];
 }
 function drillFilteredTraslados(){
   let list = scopedTraslados();
@@ -376,11 +447,16 @@ function drillFilteredTraslados(){
     if(step.level === "regional") list = list.filter(t => t.regional === step.value);
     if(step.level === "ciudad") list = list.filter(t => t.ciudad === step.value);
     if(step.level === "zona") list = list.filter(t => t.zona === step.value);
+    if(step.level === "coordinacion") list = list.filter(t => t.coordinacion === step.value);
   });
   return list;
 }
 function buildGroups(list, level){
-  const keyFn = level==="regional" ? t=>t.regional : level==="ciudad" ? t=>t.ciudad : level==="zona" ? t=>t.zona : t=>t.destino;
+  const keyFn = level==="regional" ? t=>t.regional
+    : level==="ciudad" ? t=>t.ciudad
+    : level==="zona" ? t=>t.zona
+    : level==="coordinacion" ? t=>t.coordinacion
+    : t=>t.destino;
   const map = {};
   list.forEach(t=>{
     const k = keyFn(t);
@@ -407,7 +483,7 @@ function renderHierarchyExplorer(){
   const groups = buildGroups(list, level);
   const maxPend = Math.max(1, ...groups.map(g=>g.pend));
 
-  const rootLabel = "Todas las regionales";
+  const rootLabel = currentSegment === "tiendas" ? "Todas las regionales" : currentSegment === "administrativo" ? "Todo Administrativo" : "Todo CEDI";
   const crumbs = [{label: rootLabel}].concat(drillPath.map(d=>({label:d.value})));
   const crumbsHTML = `<div class="crumbs">` + crumbs.map((c,i)=>{
     const isActive = i === crumbs.length - 1;
@@ -416,12 +492,11 @@ function renderHierarchyExplorer(){
            (i < crumbs.length - 1 ? `<span class="crumb-sep">›</span>` : "");
   }).join("") + `</div>`;
 
-  const levelTitle = level === "regional" ? "Regionales" : level === "ciudad" ? "Ciudades" : level === "zona" ? "Zonas (Jefes)" : "Bodegas";
+  const levelTitle = level === "regional" ? "Regionales" : level === "ciudad" ? "Ciudades" : level === "zona" ? "Zonas (Jefes)" : level === "coordinacion" ? "Coordinación" : "Bodegas";
   const rowsHTML = groups.length ? groups.map(g => `
     <div class="rank-row" onclick="drillInto('${g.name.replace(/'/g,"\\'")}')">
       <div class="rank-top">
         <div class="rank-name">${g.name} <span class="chev">›</span></div>
-        ${g.alert>0 ? `<span class="rank-alert-badge">${g.alert} 🔴</span>` : ""}
       </div>
       <div class="rank-stats">
         <span class="stat-item stat-pend">📦 <b>${g.pend}</b> por consolidar</span>
@@ -439,6 +514,8 @@ function renderHierarchyExplorer(){
 }
 
 function scopedTraslados(){
+  if(currentSegment === "administrativo") return TRASLADOS_ADMIN;
+  if(currentSegment === "cedi") return TRASLADOS_CEDI;
   return TRASLADOS;
 }
 function pendientes(list){
@@ -580,6 +657,22 @@ function rowItemHTML(t){
   `;
 }
 
+function setSegment(s){
+  currentSegment = s;
+  drillPath = [];
+  render();
+}
+
+function segmentTabsHTML(){
+  return `
+    <div class="segment-tabs">
+      <div class="segment-tab ${currentSegment==='tiendas'?'on':''}" onclick="setSegment('tiendas')">Tiendas</div>
+      <div class="segment-tab ${currentSegment==='administrativo'?'on':''}" onclick="setSegment('administrativo')">Administrativo</div>
+      <div class="segment-tab ${currentSegment==='cedi'?'on':''}" onclick="setSegment('cedi')">CEDI</div>
+    </div>
+  `;
+}
+
 /* ================= DASHBOARD ================= */
 function renderDashboard(){
   const scoped = scopedTraslados();
@@ -589,6 +682,7 @@ function renderDashboard(){
   const avgDias = pend.length ? Math.round(pend.reduce((a,t)=>a+t.dias,0)/pend.length) : 0;
 
   let html = `
+    ${segmentTabsHTML()}
     <div class="kpi-grid">
       <div class="kpi">
         <div class="k-label">📦 Sin consolidar</div>
@@ -606,8 +700,6 @@ function renderDashboard(){
         <div class="k-sub ${avgDias>=10?'up-red':avgDias>=5?'up-amber':'up-green'}">tiempo promedio</div>
       </div>
     </div>
-
-    ${renderHierarchyExplorer()}
   `;
 
   if(drillPath.length === 0){
@@ -621,6 +713,8 @@ function renderDashboard(){
     html += top3.length ? top3.map(rowItemHTML).join("") : `<div class="empty-note">Ningún traslado en este rango de días 🎉</div>`;
     html += `</div>`;
   }
+
+  html += renderHierarchyExplorer();
 
   document.getElementById("content").innerHTML = html;
 }
@@ -705,7 +799,7 @@ function updateRowsBodega(){
 
 /* ================= DETALLE ================= */
 function renderDetail(){
-  const t = TRASLADOS.find(x => x.id === currentDetailId) || scopedTraslados()[0];
+  const t = TRASLADOS.concat(TRASLADOS_ADMIN, TRASLADOS_CEDI).find(x => x.id === currentDetailId) || scopedTraslados()[0];
   if(!t){ document.getElementById("content").innerHTML = `<div class="empty-note">Selecciona un traslado desde la lista.</div>`; return; }
 
   let timelineHTML = "";
@@ -730,6 +824,15 @@ function renderDetail(){
     </div>
   ` : "";
 
+  const ubicacionHTML = t.regional ? `
+        <div><div class="lbl">Regional</div><div class="val">${t.regional}</div></div>
+        <div><div class="lbl">Ciudad</div><div class="val">${t.ciudad}</div></div>
+        <div><div class="lbl">Zona (Jefe)</div><div class="val">${t.zona}</div></div>
+  ` : `
+        <div><div class="lbl">Ciudad</div><div class="val">${t.ciudad}</div></div>
+        <div><div class="lbl">Coordinación</div><div class="val">${t.coordinacion}</div></div>
+  `;
+
   document.getElementById("content").innerHTML = `
     <div class="back-row" onclick="showTab(previousTab)">
       <span style="color:var(--lime); font-size:16px;">&#8592;</span>
@@ -742,9 +845,7 @@ function renderDetail(){
       <div class="detail-grid">
         <div><div class="lbl">Estado</div><div class="val">${estadoLabel(t)}</div></div>
         <div><div class="lbl">Paquetes</div><div class="val">${t.paquetes}</div></div>
-        <div><div class="lbl">Regional</div><div class="val">${t.regional}</div></div>
-        <div><div class="lbl">Ciudad</div><div class="val">${t.ciudad}</div></div>
-        <div><div class="lbl">Zona (Jefe)</div><div class="val">${t.zona}</div></div>
+        ${ubicacionHTML}
         <div><div class="lbl">Transportadora</div><div class="val">${t.transportadora}</div></div>
         <div><div class="lbl">Placa</div><div class="val">${t.placa}</div></div>
         <div><div class="lbl">Valor mercancía</div><div class="val">$${t.valorMercancia.toLocaleString('es-CO')}</div></div>
