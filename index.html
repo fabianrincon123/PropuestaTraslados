@@ -425,12 +425,13 @@ let currentBodega = null;
 let previousTab = "dash";
 let searchQuery = "";
 let sortOrder = "old"; // 'old' = más antiguo primero (más días), 'new' = más reciente primero
-let minDias = 10; // umbral de días para ver traslados atrasados: 10, 5 o 2
+let minDiasDash = 10; // umbral activo en el Dashboard (afecta jerarquía + atrasados + bodega). null = todos
+let minDiasList = null; // umbral activo en la Lista. null = mostrar todo por defecto
 
 /* ---------- Navegación jerárquica, adaptada al segmento activo ----------
    Tiendas: Regional → Ciudad → Zona (Jefe) → Bodega
    Administrativo / CEDI: Ciudad → Coordinación → Bodega */
-const LEVELS_TIENDAS = ["regional","ciudad","zona","bodega"];
+const LEVELS_TIENDAS = ["regional","zona","bodega"];
 const LEVELS_CATALOGO = ["coordinacion","bodega"];
 let drillPath = []; // [{level:'regional', value:'Reg Centro'}, {level:'ciudad', value:'BOGOTA'}, ...]
 
@@ -479,7 +480,7 @@ function crumbClick(idx){
 }
 function renderHierarchyExplorer(){
   const level = currentDrillLevel();
-  const list = drillFilteredTraslados();
+  const list = drillFilteredTraslados().filter(t => passesThreshold(t, minDiasDash));
   const groups = buildGroups(list, level);
   const maxPend = Math.max(1, ...groups.map(g=>g.pend));
 
@@ -585,8 +586,8 @@ function openBodega(nombre){
   render();
 }
 
-function getFilteredSorted(list){
-  let out = list.filter(passesThreshold);
+function getFilteredSorted(list, minVal){
+  let out = list.filter(t => passesThreshold(t, minVal));
   if(searchQuery.trim()){
     const q = searchQuery.toLowerCase();
     out = out.filter(t =>
@@ -614,30 +615,37 @@ function setSort(o){
   }
 }
 
-function setMinDias(v){
-  minDias = v;
+function setMinDiasDash(v){
+  minDiasDash = v;
+  render();
+}
+function setMinDiasList(v){
+  minDiasList = v;
+  const valStr = v===null ? "all" : String(v);
   document.querySelectorAll(".thresh-chip").forEach(el=>{
-    el.classList.toggle("on", el.getAttribute("data-val") == v);
+    el.classList.toggle("on", el.getAttribute("data-val") === valStr);
   });
-  if(currentTab === "list") updateRows();
-  else if(currentTab === "bodega") updateRowsBodega();
-  else render();
+  updateRows();
 }
 
-function thresholdChipsHTML(){
+function thresholdChipsHTML(view){
+  const current = view === "dash" ? minDiasDash : minDiasList;
+  const setter = view === "dash" ? "setMinDiasDash" : "setMinDiasList";
   return `
     <div class="thresh-row">
-      <div class="thresh-chip thresh-alert ${minDias===10?'on':''}" data-val="10" onclick="setMinDias(10)">10+ días</div>
-      <div class="thresh-chip thresh-warn ${minDias===5?'on':''}" data-val="5" onclick="setMinDias(5)">5-9 días</div>
-      <div class="thresh-chip thresh-ok ${minDias===2?'on':''}" data-val="2" onclick="setMinDias(2)">2-4 días</div>
+      <div class="thresh-chip ${current===null?'on':''}" data-val="all" onclick="${setter}(null)">Todos</div>
+      <div class="thresh-chip thresh-alert ${current===10?'on':''}" data-val="10" onclick="${setter}(10)">10+ días</div>
+      <div class="thresh-chip thresh-warn ${current===5?'on':''}" data-val="5" onclick="${setter}(5)">5-9 días</div>
+      <div class="thresh-chip thresh-ok ${current===2?'on':''}" data-val="2" onclick="${setter}(2)">2-4 días</div>
     </div>
   `;
 }
 
-function passesThreshold(t){
+function passesThreshold(t, minVal){
+  if(minVal === null) return true;
   if(t.estado !== "pend_consolidar") return true;
-  if(minDias === 10) return t.dias >= 10;
-  if(minDias === 5) return t.dias >= 5 && t.dias < 10;
+  if(minVal === 10) return t.dias >= 10;
+  if(minVal === 5) return t.dias >= 5 && t.dias < 10;
   return t.dias >= 2 && t.dias < 5;
 }
 
@@ -702,19 +710,19 @@ function renderDashboard(){
     </div>
   `;
 
+  html += thresholdChipsHTML('dash');
+  html += renderHierarchyExplorer();
+
   if(drillPath.length === 0){
     html += `
       <div class="section-title">Traslados atrasados <span class="see-all" onclick="showTab('list')">Ver todos ›</span></div>
-      ${thresholdChipsHTML()}
       <div class="rows-wrap">
     `;
-    const filteredAtrasados = pend.filter(passesThreshold).sort((a,b)=>b.dias-a.dias);
+    const filteredAtrasados = pend.filter(t=>passesThreshold(t, minDiasDash)).sort((a,b)=>b.dias-a.dias);
     const top3 = filteredAtrasados.slice(0,3);
     html += top3.length ? top3.map(rowItemHTML).join("") : `<div class="empty-note">Ningún traslado en este rango de días 🎉</div>`;
     html += `</div>`;
   }
-
-  html += renderHierarchyExplorer();
 
   document.getElementById("content").innerHTML = html;
 }
@@ -734,7 +742,7 @@ function renderList(){
         <span class="search-icon">🔍</span>
         <input class="search-input" placeholder="Buscar por ID, tienda o bodega..." oninput="onSearchInput(this.value)">
       </div>
-      ${thresholdChipsHTML()}
+      ${thresholdChipsHTML('list')}
       <div class="sort-row">
         <div class="sort-chip on" id="sortOld" onclick="setSort('old')">Más antiguo primero</div>
         <div class="sort-chip" id="sortNew" onclick="setSort('new')">Más reciente primero</div>
@@ -749,7 +757,8 @@ function renderList(){
 function renderBodega(){
   const scoped = scopedTraslados();
   const all = scoped.filter(t => t.destino === currentBodega);
-  const pend = all.filter(t => t.estado === "pend_consolidar");
+  const filtradosUmbral = all.filter(t => passesThreshold(t, minDiasDash));
+  const pend = filtradosUmbral.filter(t => t.estado === "pend_consolidar");
   const alertas = pend.filter(t => t.dias >= 10).length;
   const avgDias = pend.length ? Math.round(pend.reduce((a,t)=>a+t.dias,0)/pend.length) : 0;
 
@@ -783,7 +792,7 @@ function renderBodega(){
 
 function updateRows(){
   const scoped = scopedTraslados();
-  const filtered = getFilteredSorted(scoped);
+  const filtered = getFilteredSorted(scoped, minDiasList);
   const wrap = document.getElementById("rowsWrap");
   if(!wrap) return;
   wrap.innerHTML = filtered.length ? filtered.map(rowItemHTML).join("") : `<div class="empty-note">Sin resultados para tu búsqueda.</div>`;
@@ -791,7 +800,7 @@ function updateRows(){
 
 function updateRowsBodega(){
   const scoped = scopedTraslados().filter(t => t.destino === currentBodega);
-  const filtered = getFilteredSorted(scoped);
+  const filtered = getFilteredSorted(scoped, minDiasDash);
   const wrap = document.getElementById("rowsWrap");
   if(!wrap) return;
   wrap.innerHTML = filtered.length ? filtered.map(rowItemHTML).join("") : `<div class="empty-note">Sin traslados para esta bodega.</div>`;
