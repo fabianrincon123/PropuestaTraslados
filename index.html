@@ -417,7 +417,11 @@ const TRASLADOS_CEDI = [
   ]},
 ];
 
-let currentSegment = "tiendas"; // 'tiendas' | 'administrativo' | 'cedi'
+let currentSegment = null; // null = pantalla raíz combinada | 'tiendas' | 'administrativo' | 'cedi'
+
+function combinedList(){
+  return TRASLADOS.concat(TRASLADOS_ADMIN, TRASLADOS_CEDI);
+}
 
 let currentTab = "dash";
 let currentDetailId = null;
@@ -517,7 +521,8 @@ function renderHierarchyExplorer(){
 function scopedTraslados(){
   if(currentSegment === "administrativo") return TRASLADOS_ADMIN;
   if(currentSegment === "cedi") return TRASLADOS_CEDI;
-  return TRASLADOS;
+  if(currentSegment === "tiendas") return TRASLADOS;
+  return combinedList();
 }
 function pendientes(list){
   return (list || scopedTraslados()).filter(t => t.estado === "pend_consolidar");
@@ -547,7 +552,7 @@ function updateTabsUI(){
   document.getElementById("tabDet").classList.toggle("active", currentTab==="detail");
   document.getElementById("tabBodega").style.display = (currentTab === "bodega") ? "block" : "none";
   document.getElementById("tabDet").style.display = (currentTab === "detail") ? "block" : "none";
-  document.getElementById("topBack").style.visibility = (currentTab==="dash" && drillPath.length===0) ? "hidden" : "visible";
+  document.getElementById("topBack").style.visibility = (currentTab==="dash" && drillPath.length===0 && currentSegment===null) ? "hidden" : "visible";
 }
 
 function showTab(t){
@@ -561,10 +566,9 @@ function handleTopBack(){
   if(currentTab === "detail"){ showTab(previousTab); return; }
   if(currentTab === "bodega"){ showTab("dash"); return; }
   if(currentTab === "list"){ showTab("dash"); return; }
-  if(currentTab === "dash" && drillPath.length > 0){
-    drillPath.pop();
-    render();
-    return;
+  if(currentTab === "dash"){
+    if(drillPath.length > 0){ drillPath.pop(); render(); return; }
+    if(currentSegment !== null){ currentSegment = null; render(); return; }
   }
 }
 
@@ -681,8 +685,85 @@ function segmentTabsHTML(){
   `;
 }
 
+function selectSegment(s){
+  currentSegment = s;
+  drillPath = [];
+  render();
+}
+
+function segmentListHTML(){
+  const segs = [
+    {key:"tiendas", list: TRASLADOS},
+    {key:"administrativo", list: TRASLADOS_ADMIN},
+    {key:"cedi", list: TRASLADOS_CEDI},
+  ];
+  const maxPend = Math.max(1, ...segs.map(s=>s.list.filter(t=>t.estado==="pend_consolidar").length));
+  const rowsHTML = segs.map(s=>{
+    const pendList = s.list.filter(t=>t.estado==="pend_consolidar");
+    const pend = pendList.length;
+    const transito = s.list.filter(t=>t.estado==="en_transito").length;
+    const alert = pendList.filter(t=>t.dias>=10).length;
+    return `
+      <div class="rank-row" onclick="selectSegment('${s.key}')">
+        <div class="rank-top">
+          <div class="rank-name">${s.key==='tiendas'?'Tiendas':s.key==='administrativo'?'Administrativo':'CEDI'} <span class="chev">›</span></div>
+        </div>
+        <div class="rank-stats">
+          <span class="stat-item stat-pend">📦 <b>${pend}</b> por consolidar</span>
+          <span class="stat-item stat-transito">🚚 <b>${transito}</b> en tránsito</span>
+        </div>
+        <div class="bar-bg"><div class="bar-fill ${alert>0?'alert':''}" style="width:${(pend/maxPend)*100}%"></div></div>
+      </div>
+    `;
+  }).join("");
+  return `
+    <div class="section-title">Segmentos</div>
+    <div class="rank-card">${rowsHTML}</div>
+  `;
+}
+
+function renderDashboardRoot(){
+  const all = combinedList();
+  const pend = all.filter(t => t.estado === "pend_consolidar");
+  const alertas = pend.filter(t => t.dias >= 10).length;
+  const avgDias = pend.length ? Math.round(pend.reduce((a,t)=>a+t.dias,0)/pend.length) : 0;
+
+  let html = `
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="k-label">📦 Sin consolidar</div>
+        <div class="k-value">${pend.length}</div>
+        <div class="k-sub ${alertas>0?'up-red':'up-green'}">${alertas} en alerta</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">🚚 En tránsito</div>
+        <div class="k-value">${all.filter(t=>t.estado==='en_transito').length}</div>
+        <div class="k-sub up-green">hacia destino</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">⏱ Prom. días pend.</div>
+        <div class="k-value">${avgDias}d</div>
+        <div class="k-sub ${avgDias>=10?'up-red':avgDias>=5?'up-amber':'up-green'}">tiempo promedio</div>
+      </div>
+    </div>
+    ${thresholdChipsHTML('dash')}
+  `;
+  html += segmentListHTML();
+  html += `
+    <div class="section-title">Traslados atrasados <span class="see-all" onclick="showTab('list')">Ver todos ›</span></div>
+    <div class="rows-wrap">
+  `;
+  const filteredAtrasados = pend.filter(t=>passesThreshold(t, minDiasDash)).sort((a,b)=>b.dias-a.dias);
+  const top3 = filteredAtrasados.slice(0,3);
+  html += top3.length ? top3.map(rowItemHTML).join("") : `<div class="empty-note">Ningún traslado en este rango de días 🎉</div>`;
+  html += `</div>`;
+
+  document.getElementById("content").innerHTML = html;
+}
+
 /* ================= DASHBOARD ================= */
 function renderDashboard(){
+  if(currentSegment === null){ renderDashboardRoot(); return; }
   const scoped = scopedTraslados();
   const pend = pendientes(scoped);
   const total = pend.length;
@@ -729,13 +810,13 @@ function renderDashboard(){
 
 /* ================= LISTA (todos, compacta) ================= */
 function renderList(){
-  const scoped = scopedTraslados();
+  const scoped = combinedList();
   const alertCount = scoped.filter(t=>t.estado==='pend_consolidar' && t.dias>=10).length;
 
   document.getElementById("content").innerHTML = `
     <div class="list-sticky">
       <div class="sticky-summary">
-        <div class="s-total"><b>${scoped.length}</b> traslados en tu alcance</div>
+        <div class="s-total"><b>${scoped.length}</b> traslados (Tiendas + Administrativo + CEDI)</div>
         <div class="s-alert"><span class="dot-red"></span>${alertCount} en alerta</div>
       </div>
       <div class="search-wrap">
@@ -791,7 +872,7 @@ function renderBodega(){
 }
 
 function updateRows(){
-  const scoped = scopedTraslados();
+  const scoped = combinedList();
   const filtered = getFilteredSorted(scoped, minDiasList);
   const wrap = document.getElementById("rowsWrap");
   if(!wrap) return;
