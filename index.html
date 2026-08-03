@@ -610,7 +610,8 @@ function onSearchInput(v){
 }
 function setSort(o){
   sortOrder = o;
-  updateRows();
+  if(currentTab === "bodega") updateRowsBodega();
+  else updateRows();
   const chipOld = document.getElementById("sortOld");
   const chipNew = document.getElementById("sortNew");
   if(chipOld && chipNew){
