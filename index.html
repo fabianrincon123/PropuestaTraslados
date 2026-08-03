@@ -288,67 +288,85 @@
 <script>
 /* ---------- DATOS (basados en la estructura real Regional > Ciudad > Zona/Jefe > Bodega) ---------- */
 const TRASLADOS = [
-  {id:"TR-20001", tipo:"Tienda → Tienda", origen:"790 - DEREK GRAN ESTACION (BOG)", destino:"532 - STIRPE TUNAL (BOG)", regional:"Reg Centro", ciudad:"BOGOTA", zona:"Cristina Mancera", fDespacho:"9 jul 2026", fRecepcion:"10 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:12, paquetes:28, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"TBH-045", valorMercancia:8450000, etapas:[
-    {n:"Despacho", loc:"790 - DEREK GRAN ESTACION (BOG)", fecha:"9 jul 2026 · 8:10 am", resp:"Cristina Mancera", done:true},
+  {id:"TR-20001", tipo:"Tienda → Tienda", origen:"851 - DEREK VIVA (VVC)", destino:"532 - STIRPE TUNAL (BOG)", regional:"Reg Centro", ciudad:"BOGOTA", zona:"Cristina Mancera", fDespacho:"9 jul 2026", fRecepcion:"10 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:12, paquetes:28, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"TBH-045", valorMercancia:8450000, etapas:[
+    {n:"Se genera el traslado", loc:"851 - DEREK VIVA (VVC)", fecha:"9 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"851 - DEREK VIVA (VVC)", fecha:"9 jul 2026 · 8:10 am", resp:"Fatima Rojas", done:true},
+    {n:"Escala en CEDI", loc:"CEDI Bogotá", fecha:"9 jul 2026 · 1:30 pm", resp:"Operario CEDI", done:true},
     {n:"Recepción en destino", loc:"532 - STIRPE TUNAL (BOG)", fecha:"10 jul 2026 · 11:30 am", resp:"Cristina Mancera", done:true},
     {n:"Consolidación", loc:"532 - STIRPE TUNAL (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
   {id:"TR-20002", tipo:"Tienda → Tienda", origen:"545 - DEREK ENSUEÑO (BOG)", destino:"546 - STIRPE ENSUEÑO (BOG)", regional:"Reg Centro", ciudad:"BOGOTA", zona:"Cristina Mancera", fDespacho:"18 jul 2026", fRecepcion:"18 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:4, paquetes:6, motivo:"Balanceo por talla faltante", transportadora:"Vehículo propio", placa:"SKA-112", valorMercancia:1120000, etapas:[
+    {n:"Se genera el traslado", loc:"545 - DEREK ENSUEÑO (BOG)", fecha:"18 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"545 - DEREK ENSUEÑO (BOG)", fecha:"18 jul 2026 · 2:00 pm", resp:"Cristina Mancera", done:true},
     {n:"Recepción en destino", loc:"546 - STIRPE ENSUEÑO (BOG)", fecha:"18 jul 2026 · 3:40 pm", resp:"Cristina Mancera", done:true},
     {n:"Consolidación", loc:"546 - STIRPE ENSUEÑO (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
   {id:"TR-20003", tipo:"Tienda → Tienda", origen:"871 - TRAVEL VIVA (VVC)", destino:"825 - STIRPE VIVA (VVC)", regional:"Reg Centro", ciudad:"VILLAVICENCIO", zona:"Fatima Rojas", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:7, paquetes:15, motivo:"Surtido colección nueva", transportadora:"Interrapidísimo", placa:"WKD-330", valorMercancia:5230000, etapas:[
+    {n:"Se genera el traslado", loc:"871 - TRAVEL VIVA (VVC)", fecha:"15 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"871 - TRAVEL VIVA (VVC)", fecha:"15 jul 2026 · 7:45 am", resp:"Fatima Rojas", done:true},
     {n:"Recepción en destino", loc:"825 - STIRPE VIVA (VVC)", fecha:"16 jul 2026 · 10:15 am", resp:"Fatima Rojas", done:true},
     {n:"Consolidación", loc:"825 - STIRPE VIVA (VVC)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
   {id:"TR-20004", tipo:"Tienda → Tienda", origen:"869 - FACTORY CENTRO (VVC)", destino:"883 - STIRPE UNICENTRO (VVC)", regional:"Reg Centro", ciudad:"VILLAVICENCIO", zona:"Fatima Rojas", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:20, motivo:"Devolución de temporada", transportadora:"Envía", placa:"RMX-880", valorMercancia:4780000, etapas:[
+    {n:"Se genera el traslado", loc:"869 - FACTORY CENTRO (VVC)", fecha:"20 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"869 - FACTORY CENTRO (VVC)", fecha:"20 jul 2026 · 4:20 pm", resp:"Fatima Rojas", done:true},
     {n:"Recepción en destino", loc:"883 - STIRPE UNICENTRO (VVC)", fecha:"En tránsito", resp:"—", done:false, current:true},
     {n:"Consolidación", loc:"883 - STIRPE UNICENTRO (VVC)", fecha:"Pendiente", resp:"—", done:false},
   ]},
   {id:"TR-20005", tipo:"Tienda → Tienda", origen:"894 - STIRPE TITAN (BOG)", destino:"840 - DEREK SANTAFE (BOG)", regional:"Reg Centro1", ciudad:"BOGOTA", zona:"Johana Avendaño", fDespacho:"5 jul 2026", fRecepcion:"6 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:16, paquetes:34, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"TBH-045", valorMercancia:9900000, etapas:[
+    {n:"Se genera el traslado", loc:"894 - STIRPE TITAN (BOG)", fecha:"5 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"894 - STIRPE TITAN (BOG)", fecha:"5 jul 2026 · 8:00 am", resp:"Johana Avendaño", done:true},
     {n:"Recepción en destino", loc:"840 - DEREK SANTAFE (BOG)", fecha:"6 jul 2026 · 12:10 pm", resp:"Johana Avendaño", done:true},
     {n:"Consolidación", loc:"840 - DEREK SANTAFE (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
   {id:"TR-20006", tipo:"Tienda → Tienda", origen:"411 - DEREK NUESTRO (BOG)", destino:"412 - U82 NUESTRO (BOG)", regional:"Reg Centro1", ciudad:"BOGOTA", zona:"Luis Guanchez", fDespacho:"18 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:3, paquetes:5, motivo:"Traslado por talla faltante", transportadora:"Vehículo propio", placa:"SKA-112", valorMercancia:980000, etapas:[
+    {n:"Se genera el traslado", loc:"411 - DEREK NUESTRO (BOG)", fecha:"18 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"411 - DEREK NUESTRO (BOG)", fecha:"18 jul 2026 · 1:15 pm", resp:"Luis Guanchez", done:true},
     {n:"Recepción en destino", loc:"412 - U82 NUESTRO (BOG)", fecha:"19 jul 2026 · 9:00 am", resp:"Luis Guanchez", done:true},
     {n:"Consolidación", loc:"412 - U82 NUESTRO (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20008", tipo:"Tienda → Tienda", origen:"884 - STIRPE G. PLAZA DEL SOL (BAQ)", destino:"524 - DEREK GRAN PLAZA DEL SOL (BAQ)", regional:"Reg Norte", ciudad:"BARRANQUILLA", zona:"Andrea Moreno", fDespacho:"19 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:2, paquetes:9, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"BAQ-221", valorMercancia:2110000, etapas:[
+  {id:"TR-20008", tipo:"Tienda → Tienda", origen:"884 - STIRPE G. PLAZA DEL SOL (BAQ)", destino:"858 - STIRPE GUATAPURI (VUP)", regional:"Reg Norte", ciudad:"VALLEDUPAR", zona:"Marelyn Montejo", fDespacho:"19 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:2, paquetes:9, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"BAQ-221", valorMercancia:2110000, etapas:[
+    {n:"Se genera el traslado", loc:"884 - STIRPE G. PLAZA DEL SOL (BAQ)", fecha:"19 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"884 - STIRPE G. PLAZA DEL SOL (BAQ)", fecha:"19 jul 2026 · 8:40 am", resp:"Andrea Moreno", done:true},
-    {n:"Recepción en destino", loc:"524 - DEREK GRAN PLAZA DEL SOL (BAQ)", fecha:"19 jul 2026 · 11:05 am", resp:"Andrea Moreno", done:true},
-    {n:"Consolidación", loc:"524 - DEREK GRAN PLAZA DEL SOL (BAQ)", fecha:"Pendiente", resp:"—", done:false, current:true},
+    {n:"Escala en CEDI", loc:"CEDI Valledupar", fecha:"19 jul 2026 · 10:15 am", resp:"Operario CEDI", done:true},
+    {n:"Recepción en destino", loc:"858 - STIRPE GUATAPURI (VUP)", fecha:"19 jul 2026 · 11:05 am", resp:"Marelyn Montejo", done:true},
+    {n:"Consolidación", loc:"858 - STIRPE GUATAPURI (VUP)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
   {id:"TR-20009", tipo:"Tienda → Tienda", origen:"539 - DEREK ALEGRA (BAQ)", destino:"541 - STIRPE ALEGRA (BAQ)", regional:"Reg Norte", ciudad:"BARRANQUILLA", zona:"Andrea Moreno", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:7, motivo:"Balanceo de inventario", transportadora:"Vehículo propio", placa:"BAQ-118", valorMercancia:1560000, etapas:[
+    {n:"Se genera el traslado", loc:"539 - DEREK ALEGRA (BAQ)", fecha:"20 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"539 - DEREK ALEGRA (BAQ)", fecha:"20 jul 2026 · 3:10 pm", resp:"Andrea Moreno", done:true},
     {n:"Recepción en destino", loc:"541 - STIRPE ALEGRA (BAQ)", fecha:"En tránsito", resp:"—", done:false, current:true},
     {n:"Consolidación", loc:"541 - STIRPE ALEGRA (BAQ)", fecha:"Pendiente", resp:"—", done:false},
   ]},
   {id:"TR-20010", tipo:"Tienda → Tienda", origen:"868 - STIRPE CENTRO CRA 7 (VUP)", destino:"833 - DEREK MAYALES (VUP)", regional:"Reg Norte", ciudad:"VALLEDUPAR", zona:"Marelyn Montejo", fDespacho:"10 jul 2026", fRecepcion:"11 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:11, paquetes:19, motivo:"Reposición de inventario", transportadora:"Interrapidísimo", placa:"VUP-076", valorMercancia:6020000, etapas:[
+    {n:"Se genera el traslado", loc:"868 - STIRPE CENTRO CRA 7 (VUP)", fecha:"10 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"868 - STIRPE CENTRO CRA 7 (VUP)", fecha:"10 jul 2026 · 8:00 am", resp:"Marelyn Montejo", done:true},
     {n:"Recepción en destino", loc:"833 - DEREK MAYALES (VUP)", fecha:"11 jul 2026 · 10:40 am", resp:"Marelyn Montejo", done:true},
     {n:"Consolidación", loc:"833 - DEREK MAYALES (VUP)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20011", tipo:"Tienda → Tienda", origen:"878 - STIRPE 3 CRA.14X19 (AXM)", destino:"872 - STIRPE 1 CRA.14 (AXM)", regional:"Reg Occidente 1", ciudad:"ARMENIA", zona:"Abraham Ortega", fDespacho:"16 jul 2026", fRecepcion:"17 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:5, paquetes:10, motivo:"Surtido colección nueva", transportadora:"Coordinadora", placa:"AXM-303", valorMercancia:3870000, etapas:[
+  {id:"TR-20011", tipo:"Tienda → Tienda", origen:"878 - STIRPE 3 CRA.14X19 (AXM)", destino:"891 - STIRPE CALLE 28 (MZL)", regional:"Reg Occidente 1", ciudad:"MANIZALES", zona:"Brandon Torres", fDespacho:"16 jul 2026", fRecepcion:"17 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:5, paquetes:10, motivo:"Surtido colección nueva", transportadora:"Coordinadora", placa:"AXM-303", valorMercancia:3870000, etapas:[
+    {n:"Se genera el traslado", loc:"878 - STIRPE 3 CRA.14X19 (AXM)", fecha:"16 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"878 - STIRPE 3 CRA.14X19 (AXM)", fecha:"16 jul 2026 · 9:20 am", resp:"Abraham Ortega", done:true},
-    {n:"Recepción en destino", loc:"872 - STIRPE 1 CRA.14 (AXM)", fecha:"17 jul 2026 · 12:00 pm", resp:"Abraham Ortega", done:true},
-    {n:"Consolidación", loc:"872 - STIRPE 1 CRA.14 (AXM)", fecha:"Pendiente", resp:"—", done:false, current:true},
+    {n:"Escala en CEDI", loc:"CEDI Manizales", fecha:"16 jul 2026 · 3:00 pm", resp:"Operario CEDI", done:true},
+    {n:"Recepción en destino", loc:"891 - STIRPE CALLE 28 (MZL)", fecha:"17 jul 2026 · 12:00 pm", resp:"Brandon Torres", done:true},
+    {n:"Consolidación", loc:"891 - STIRPE CALLE 28 (MZL)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20012", tipo:"Tienda → Tienda", origen:"887 - STIRPE CRA.23 (MZL)", destino:"888 - DEREK CRA.22 (MZL)", regional:"Reg Occidente 1", ciudad:"MANIZALES", zona:"Brandon Torres", fDespacho:"19 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:2, paquetes:4, motivo:"Traslado por talla faltante", transportadora:"Vehículo propio", placa:"MZL-045", valorMercancia:720000, etapas:[
+  {id:"TR-20012", tipo:"Tienda → Tienda", origen:"887 - STIRPE CRA.23 (MZL)", destino:"859 - FACTORY CRA.8 (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Angela Martinez", fDespacho:"19 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:2, paquetes:4, motivo:"Traslado por talla faltante", transportadora:"Vehículo propio", placa:"MZL-045", valorMercancia:720000, etapas:[
+    {n:"Se genera el traslado", loc:"887 - STIRPE CRA.23 (MZL)", fecha:"19 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"887 - STIRPE CRA.23 (MZL)", fecha:"19 jul 2026 · 10:30 am", resp:"Brandon Torres", done:true},
-    {n:"Recepción en destino", loc:"888 - DEREK CRA.22 (MZL)", fecha:"19 jul 2026 · 12:15 pm", resp:"Brandon Torres", done:true},
-    {n:"Consolidación", loc:"888 - DEREK CRA.22 (MZL)", fecha:"Pendiente", resp:"—", done:false, current:true},
+    {n:"Escala en CEDI", loc:"CEDI Pereira", fecha:"19 jul 2026 · 11:45 am", resp:"Operario CEDI", done:true},
+    {n:"Recepción en destino", loc:"859 - FACTORY CRA.8 (PEI)", fecha:"19 jul 2026 · 12:15 pm", resp:"Angela Martinez", done:true},
+    {n:"Consolidación", loc:"859 - FACTORY CRA.8 (PEI)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20013", tipo:"Tienda → Tienda", origen:"895 - TRAVEL CENTRO (PEI)", destino:"240 - STIRPE COMERCIO (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Angela Martinez", fDespacho:"7 jul 2026", fRecepcion:"8 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:14, paquetes:25, motivo:"Reposición de inventario", transportadora:"Envía", placa:"PEI-556", valorMercancia:7340000, etapas:[
-    {n:"Despacho", loc:"895 - TRAVEL CENTRO (PEI)", fecha:"7 jul 2026 · 7:50 am", resp:"Angela Martinez", done:true},
+  {id:"TR-20013", tipo:"Tienda → Tienda", origen:"873 - STIRPE CLL.19 (AXM)", destino:"240 - STIRPE COMERCIO (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Angela Martinez", fDespacho:"7 jul 2026", fRecepcion:"8 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:14, paquetes:25, motivo:"Reposición de inventario", transportadora:"Envía", placa:"PEI-556", valorMercancia:7340000, etapas:[
+    {n:"Se genera el traslado", loc:"873 - STIRPE CLL.19 (AXM)", fecha:"7 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"873 - STIRPE CLL.19 (AXM)", fecha:"7 jul 2026 · 7:50 am", resp:"Abraham Ortega", done:true},
+    {n:"Escala en CEDI", loc:"CEDI Pereira", fecha:"7 jul 2026 · 4:20 pm", resp:"Operario CEDI", done:true},
     {n:"Recepción en destino", loc:"240 - STIRPE COMERCIO (PEI)", fecha:"8 jul 2026 · 11:20 am", resp:"Angela Martinez", done:true},
     {n:"Consolidación", loc:"240 - STIRPE COMERCIO (PEI)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
   {id:"TR-20014", tipo:"Tienda → Tienda", origen:"810 - DEREK ARBOLEDA (PEI)", destino:"824 - STIRPE ARBOLEDA (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Braulio Calderon", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:6, paquetes:8, motivo:"Balanceo por talla faltante", transportadora:"Vehículo propio", placa:"PEI-201", valorMercancia:1980000, etapas:[
+    {n:"Se genera el traslado", loc:"810 - DEREK ARBOLEDA (PEI)", fecha:"15 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"810 - DEREK ARBOLEDA (PEI)", fecha:"15 jul 2026 · 2:40 pm", resp:"Braulio Calderon", done:true},
     {n:"Recepción en destino", loc:"824 - STIRPE ARBOLEDA (PEI)", fecha:"16 jul 2026 · 9:15 am", resp:"Braulio Calderon", done:true},
     {n:"Consolidación", loc:"824 - STIRPE ARBOLEDA (PEI)", fecha:"Pendiente", resp:"—", done:false, current:true},
@@ -358,26 +376,31 @@ const TRASLADOS = [
 /* ---------- Traslados de prueba: Administrativo y CEDI (datos reales de bodegas) ---------- */
 const TRASLADOS_ADMIN = [
   {id:"TRA-001", tipo:"Administrativo Interno", origen:"961 - GESTION DOCUMENTAL", destino:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", ciudad:"BUCARAMANGA", coordinacion:"Elizabeth Arenas", fDespacho:"6 jul 2026", fRecepcion:"7 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:12, paquetes:6, motivo:"Traslado de archivo por contingencia", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:850000, etapas:[
+    {n:"Se genera el traslado", loc:"961 - GESTION DOCUMENTAL", fecha:"6 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"961 - GESTION DOCUMENTAL", fecha:"6 jul 2026 · 9:10 am", resp:"Elizabeth Arenas", done:true},
     {n:"Recepción en destino", loc:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", fecha:"7 jul 2026 · 11:00 am", resp:"Paola Gallo", done:true},
     {n:"Consolidación", loc:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
   {id:"TRA-002", tipo:"Administrativo Interno", origen:"960 - CONTABILIDAD", destino:"956 - FINANCIERA", ciudad:"BUCARAMANGA", coordinacion:"Zully Uni Campos", fDespacho:"18 jul 2026", fRecepcion:"18 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:4, paquetes:3, motivo:"Traslado de soportes contables", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:120000, etapas:[
+    {n:"Se genera el traslado", loc:"960 - CONTABILIDAD", fecha:"18 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"960 - CONTABILIDAD", fecha:"18 jul 2026 · 2:20 pm", resp:"Zully Uni Campos", done:true},
     {n:"Recepción en destino", loc:"956 - FINANCIERA", fecha:"18 jul 2026 · 3:45 pm", resp:"Juan Camilo Mejia", done:true},
     {n:"Consolidación", loc:"956 - FINANCIERA", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
   {id:"TRA-003", tipo:"Administrativo Interno", origen:"975 - AUDITORIA INTERNA", destino:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", ciudad:"BUCARAMANGA", coordinacion:"Paola Gallo", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:2, motivo:"Traslado de evidencias de auditoría", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:60000, etapas:[
+    {n:"Se genera el traslado", loc:"975 - AUDITORIA INTERNA", fecha:"20 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"975 - AUDITORIA INTERNA", fecha:"20 jul 2026 · 4:00 pm", resp:"Paola Gallo", done:true},
     {n:"Recepción en destino", loc:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", fecha:"En tránsito", resp:"—", done:false, current:true},
     {n:"Consolidación", loc:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", fecha:"Pendiente", resp:"—", done:false},
   ]},
   {id:"TRA-004", tipo:"Administrativo Interno", origen:"985 - MANTENIMIENTO", destino:"990 - SISTEMAS", ciudad:"BUCARAMANGA", coordinacion:"Elizabeth Arenas", fDespacho:"14 jul 2026", fRecepcion:"15 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:7, paquetes:4, motivo:"Traslado de equipos", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:2300000, etapas:[
+    {n:"Se genera el traslado", loc:"985 - MANTENIMIENTO", fecha:"14 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"985 - MANTENIMIENTO", fecha:"14 jul 2026 · 8:30 am", resp:"Elizabeth Arenas", done:true},
     {n:"Recepción en destino", loc:"990 - SISTEMAS", fecha:"15 jul 2026 · 10:15 am", resp:"Elizabeth Arenas", done:true},
     {n:"Consolidación", loc:"990 - SISTEMAS", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
   {id:"TRA-005", tipo:"Administrativo Interno", origen:"987 - SAGRILAFT BG", destino:"1 - GENERAL ADMINISTRATIVO", ciudad:"BUCARAMANGA", coordinacion:"Adriana Pardo", fDespacho:"3 jul 2026", fRecepcion:"4 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:15, paquetes:5, motivo:"Traslado de documentación regulatoria", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:150000, etapas:[
+    {n:"Se genera el traslado", loc:"987 - SAGRILAFT BG", fecha:"3 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"987 - SAGRILAFT BG", fecha:"3 jul 2026 · 9:00 am", resp:"Adriana Pardo", done:true},
     {n:"Recepción en destino", loc:"1 - GENERAL ADMINISTRATIVO", fecha:"4 jul 2026 · 11:40 am", resp:"Elizabeth Arenas", done:true},
     {n:"Consolidación", loc:"1 - GENERAL ADMINISTRATIVO", fecha:"Pendiente", resp:"—", done:false, current:true},
@@ -386,31 +409,37 @@ const TRASLADOS_ADMIN = [
 
 const TRASLADOS_CEDI = [
   {id:"TRC-001", tipo:"CEDI Interno", origen:"602 - DEVOLUCIONES POR CALIDAD DE TIENDAS", destino:"603 - GARANTIAS EN ABANDONO", ciudad:"BUCARAMANGA", coordinacion:"Sin asignar", fDespacho:"8 jul 2026", fRecepcion:"9 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:11, paquetes:40, motivo:"Clasificación de devoluciones", transportadora:"Vehículo propio", placa:"CDI-101", valorMercancia:3200000, etapas:[
+    {n:"Se genera el traslado", loc:"602 - DEVOLUCIONES POR CALIDAD DE TIENDAS", fecha:"8 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"602 - DEVOLUCIONES POR CALIDAD DE TIENDAS", fecha:"8 jul 2026 · 8:15 am", resp:"Operario CEDI", done:true},
     {n:"Recepción en destino", loc:"603 - GARANTIAS EN ABANDONO", fecha:"9 jul 2026 · 10:30 am", resp:"Operario CEDI", done:true},
     {n:"Consolidación", loc:"603 - GARANTIAS EN ABANDONO", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
   {id:"TRC-002", tipo:"CEDI Interno", origen:"718 - TALLERES DE RELOJES", destino:"720 - SEGUNDAS DE TALLERES EN TRANSITO", ciudad:"BUCARAMANGA", coordinacion:"Sin asignar", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:6, paquetes:15, motivo:"Traslado a segundas", transportadora:"Vehículo propio", placa:"CDI-102", valorMercancia:980000, etapas:[
+    {n:"Se genera el traslado", loc:"718 - TALLERES DE RELOJES", fecha:"15 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"718 - TALLERES DE RELOJES", fecha:"15 jul 2026 · 1:00 pm", resp:"Operario CEDI", done:true},
     {n:"Recepción en destino", loc:"720 - SEGUNDAS DE TALLERES EN TRANSITO", fecha:"16 jul 2026 · 9:20 am", resp:"Operario CEDI", done:true},
     {n:"Consolidación", loc:"720 - SEGUNDAS DE TALLERES EN TRANSITO", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
   {id:"TRC-003", tipo:"CEDI Interno", origen:"101 - SEGUNDAS", destino:"103 - PROMOCION", ciudad:"BUCARAMANGA", coordinacion:"Jorge Eduardo Valencia", fDespacho:"18 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:3, paquetes:22, motivo:"Reclasificación a promoción", transportadora:"Vehículo propio", placa:"CDI-103", valorMercancia:4100000, etapas:[
+    {n:"Se genera el traslado", loc:"101 - SEGUNDAS", fecha:"18 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"101 - SEGUNDAS", fecha:"18 jul 2026 · 10:00 am", resp:"Jorge Eduardo Valencia", done:true},
     {n:"Recepción en destino", loc:"103 - PROMOCION", fecha:"19 jul 2026 · 8:45 am", resp:"Jorge Eduardo Valencia", done:true},
     {n:"Consolidación", loc:"103 - PROMOCION", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
   {id:"TRC-004", tipo:"CEDI Interno", origen:"400 - INSUMOS MERCADEO", destino:"600 - DEVOLUCION CALIDAD EN TRANSITO CLIENTES", ciudad:"BUCARAMANGA", coordinacion:"Yessid Garcés", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:8, motivo:"Traslado de insumos", transportadora:"Vehículo propio", placa:"CDI-104", valorMercancia:560000, etapas:[
+    {n:"Se genera el traslado", loc:"400 - INSUMOS MERCADEO", fecha:"20 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"400 - INSUMOS MERCADEO", fecha:"20 jul 2026 · 3:30 pm", resp:"Yessid Garcés", done:true},
     {n:"Recepción en destino", loc:"600 - DEVOLUCION CALIDAD EN TRANSITO CLIENTES", fecha:"En tránsito", resp:"—", done:false, current:true},
     {n:"Consolidación", loc:"600 - DEVOLUCION CALIDAD EN TRANSITO CLIENTES", fecha:"Pendiente", resp:"—", done:false},
   ]},
   {id:"TRC-005", tipo:"CEDI Interno", origen:"601 - DEVOLUCION PROVEEDORES", destino:"104 - CONGELADOS PROMOCION", ciudad:"GIRON", coordinacion:"Monica Castro", fDespacho:"11 jul 2026", fRecepcion:"12 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:9, paquetes:30, motivo:"Traslado a bodega Girón", transportadora:"Vehículo propio", placa:"CDI-105", valorMercancia:5400000, etapas:[
+    {n:"Se genera el traslado", loc:"601 - DEVOLUCION PROVEEDORES", fecha:"11 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"601 - DEVOLUCION PROVEEDORES", fecha:"11 jul 2026 · 8:00 am", resp:"Operario CEDI", done:true},
     {n:"Recepción en destino", loc:"104 - CONGELADOS PROMOCION", fecha:"12 jul 2026 · 11:15 am", resp:"Monica Castro", done:true},
     {n:"Consolidación", loc:"104 - CONGELADOS PROMOCION", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
   {id:"TRC-006", tipo:"CEDI Interno", origen:"717 - RECUPERACIONES", destino:"100 - REPOSICION", ciudad:"GIRON", coordinacion:"Elizabeth Arenas", fDespacho:"6 jul 2026", fRecepcion:"7 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:14, paquetes:18, motivo:"Recuperación a reposición", transportadora:"Vehículo propio", placa:"CDI-106", valorMercancia:2750000, etapas:[
+    {n:"Se genera el traslado", loc:"717 - RECUPERACIONES", fecha:"6 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"717 - RECUPERACIONES", fecha:"6 jul 2026 · 9:40 am", resp:"Juliana Otero", done:true},
     {n:"Recepción en destino", loc:"100 - REPOSICION", fecha:"7 jul 2026 · 1:05 pm", resp:"Elizabeth Arenas", done:true},
     {n:"Consolidación", loc:"100 - REPOSICION", fecha:"Pendiente", resp:"—", done:false, current:true},
