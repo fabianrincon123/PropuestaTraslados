@@ -697,8 +697,9 @@ function segmentListHTML(){
     {key:"administrativo", list: TRASLADOS_ADMIN},
     {key:"cedi", list: TRASLADOS_CEDI},
   ];
-  const maxPend = Math.max(1, ...segs.map(s=>s.list.filter(t=>t.estado==="pend_consolidar").length));
-  const rowsHTML = segs.map(s=>{
+  const segsFiltered = segs.map(s => ({key:s.key, list: s.list.filter(t=>passesThreshold(t, minDiasDash))}));
+  const maxPend = Math.max(1, ...segsFiltered.map(s=>s.list.filter(t=>t.estado==="pend_consolidar").length));
+  const rowsHTML = segsFiltered.map(s=>{
     const pendList = s.list.filter(t=>t.estado==="pend_consolidar");
     const pend = pendList.length;
     const transito = s.list.filter(t=>t.estado==="en_transito").length;
