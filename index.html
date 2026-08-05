@@ -118,6 +118,7 @@
   .up-red{ color:var(--red); }
   .up-green{ color:var(--green); }
   .up-amber{ color:var(--amber); }
+  .pvp-highlight{ color:#FFD84D; font-weight:800; font-size:11px; }
 
   .section-title{
     font-size:12px; text-transform:uppercase; letter-spacing:.6px; color:var(--text-dim);
@@ -231,6 +232,25 @@
   .detail-grid .lbl{ font-size:10.5px; color:var(--text-dim); text-transform:uppercase; }
   .detail-grid .val{ font-size:13.5px; font-weight:700; margin-top:3px; }
 
+  .ver-detalle-btn{
+    width:100%; margin-top:16px; background:var(--bg2); border:1px solid var(--lime-dim);
+    color:var(--lime); font-size:13px; font-weight:700; padding:10px; border-radius:12px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .contenido-panel{ margin-top:12px; border-top:1px solid var(--border); padding-top:12px; }
+  .prod-header{
+    display:grid; grid-template-columns:1fr 2fr auto; gap:8px; font-size:10px;
+    color:var(--text-dim); text-transform:uppercase; letter-spacing:.4px; padding:0 4px 6px 4px;
+  }
+  .prod-row{
+    display:grid; grid-template-columns:1fr 2fr auto; gap:8px; align-items:center;
+    padding:8px 4px; border-bottom:1px solid var(--border); font-size:12.5px;
+  }
+  .prod-row:last-child{ border-bottom:none; }
+  .prod-sku{ color:var(--text-dim); font-weight:600; }
+  .prod-nombre{ font-weight:600; }
+  .prod-cant{ font-weight:800; color:var(--lime); text-align:right; }
+
   /* Timeline */
   .timeline{ position:relative; padding-left:30px; }
   .tl-item{ position:relative; padding-bottom:26px; }
@@ -288,161 +308,251 @@
 <script>
 /* ---------- DATOS (basados en la estructura real Regional > Ciudad > Zona/Jefe > Bodega) ---------- */
 const TRASLADOS = [
-  {id:"TR-20001", tipo:"Tienda → Tienda", origen:"851 - DEREK VIVA (VVC)", destino:"532 - STIRPE TUNAL (BOG)", regional:"Reg Centro", ciudad:"BOGOTA", zona:"Cristina Mancera", fDespacho:"9 jul 2026", fRecepcion:"10 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:12, paquetes:28, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"TBH-045", valorMercancia:8450000, etapas:[
+  {id:"TR-20001", tipo:"Tienda → Tienda", origen:"851 - DEREK VIVA (VVC)", destino:"532 - STIRPE TUNAL (BOG)", regional:"Reg Centro", ciudad:"BOGOTA", zona:"Cristina Mancera", fDespacho:"9 jul 2026", fRecepcion:"10 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:12, paquetes:28, productos:[{sku:"REF-2000", nombre:"Tenis running caballero", cantidad:5}, {sku:"REF-2011", nombre:"Tenis deportivo dama", cantidad:5}, {sku:"REF-2022", nombre:"Bota chelsea dama", cantidad:6}, {sku:"REF-2033", nombre:"Bota casual dama", cantidad:6}, {sku:"REF-2044", nombre:"Zapato formal caballero", cantidad:6}], motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"TBH-045", valorMercancia:8450000, etapas:[
     {n:"Se genera el traslado", loc:"851 - DEREK VIVA (VVC)", fecha:"9 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"851 - DEREK VIVA (VVC)", fecha:"9 jul 2026 · 8:10 am", resp:"Fatima Rojas", done:true},
     {n:"Escala en CEDI", loc:"CEDI Bogotá", fecha:"9 jul 2026 · 1:30 pm", resp:"Operario CEDI", done:true},
     {n:"Recepción en destino", loc:"532 - STIRPE TUNAL (BOG)", fecha:"10 jul 2026 · 11:30 am", resp:"Cristina Mancera", done:true},
     {n:"Consolidación", loc:"532 - STIRPE TUNAL (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20002", tipo:"Tienda → Tienda", origen:"545 - DEREK ENSUEÑO (BOG)", destino:"546 - STIRPE ENSUEÑO (BOG)", regional:"Reg Centro", ciudad:"BOGOTA", zona:"Cristina Mancera", fDespacho:"18 jul 2026", fRecepcion:"18 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:4, paquetes:6, motivo:"Balanceo por talla faltante", transportadora:"Vehículo propio", placa:"SKA-112", valorMercancia:1120000, etapas:[
+  {id:"TR-20002", tipo:"Tienda → Tienda", origen:"545 - DEREK ENSUEÑO (BOG)", destino:"546 - STIRPE ENSUEÑO (BOG)", regional:"Reg Centro", ciudad:"BOGOTA", zona:"Cristina Mancera", fDespacho:"18 jul 2026", fRecepcion:"18 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:4, paquetes:6, productos:[{sku:"REF-2220", nombre:"Sandalia plataforma dama", cantidad:1}, {sku:"REF-2231", nombre:"Balerina dama", cantidad:1}, {sku:"REF-2242", nombre:"Sandalia trekking caballero", cantidad:1}, {sku:"REF-2253", nombre:"Bota casual dama", cantidad:1}, {sku:"REF-2264", nombre:"Tenis chunky dama", cantidad:1}, {sku:"REF-2275", nombre:"Mocasín caballero", cantidad:1}], motivo:"Balanceo por talla faltante", transportadora:"Vehículo propio", placa:"SKA-112", valorMercancia:1120000, etapas:[
     {n:"Se genera el traslado", loc:"545 - DEREK ENSUEÑO (BOG)", fecha:"18 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"545 - DEREK ENSUEÑO (BOG)", fecha:"18 jul 2026 · 2:00 pm", resp:"Cristina Mancera", done:true},
     {n:"Recepción en destino", loc:"546 - STIRPE ENSUEÑO (BOG)", fecha:"18 jul 2026 · 3:40 pm", resp:"Cristina Mancera", done:true},
     {n:"Consolidación", loc:"546 - STIRPE ENSUEÑO (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20003", tipo:"Tienda → Tienda", origen:"871 - TRAVEL VIVA (VVC)", destino:"825 - STIRPE VIVA (VVC)", regional:"Reg Centro", ciudad:"VILLAVICENCIO", zona:"Fatima Rojas", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:7, paquetes:15, motivo:"Surtido colección nueva", transportadora:"Interrapidísimo", placa:"WKD-330", valorMercancia:5230000, etapas:[
+  {id:"TR-20003", tipo:"Tienda → Tienda", origen:"871 - TRAVEL VIVA (VVC)", destino:"825 - STIRPE VIVA (VVC)", regional:"Reg Centro", ciudad:"VILLAVICENCIO", zona:"Fatima Rojas", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:7, paquetes:15, productos:[{sku:"REF-2440", nombre:"Zapato formal caballero", cantidad:3}, {sku:"REF-2451", nombre:"Zapato náutico caballero", cantidad:4}, {sku:"REF-2462", nombre:"Zapatilla niño", cantidad:4}, {sku:"REF-2473", nombre:"Zapato mocasín dama", cantidad:4}], motivo:"Surtido colección nueva", transportadora:"Interrapidísimo", placa:"WKD-330", valorMercancia:5230000, etapas:[
     {n:"Se genera el traslado", loc:"871 - TRAVEL VIVA (VVC)", fecha:"15 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"871 - TRAVEL VIVA (VVC)", fecha:"15 jul 2026 · 7:45 am", resp:"Fatima Rojas", done:true},
     {n:"Recepción en destino", loc:"825 - STIRPE VIVA (VVC)", fecha:"16 jul 2026 · 10:15 am", resp:"Fatima Rojas", done:true},
     {n:"Consolidación", loc:"825 - STIRPE VIVA (VVC)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20004", tipo:"Tienda → Tienda", origen:"869 - FACTORY CENTRO (VVC)", destino:"883 - STIRPE UNICENTRO (VVC)", regional:"Reg Centro", ciudad:"VILLAVICENCIO", zona:"Fatima Rojas", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:20, motivo:"Devolución de temporada", transportadora:"Envía", placa:"RMX-880", valorMercancia:4780000, etapas:[
+  {id:"TR-20004", tipo:"Tienda → Tienda", origen:"869 - FACTORY CENTRO (VVC)", destino:"883 - STIRPE UNICENTRO (VVC)", regional:"Reg Centro", ciudad:"VILLAVICENCIO", zona:"Fatima Rojas", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:20, productos:[{sku:"REF-2660", nombre:"Bota casual dama", cantidad:4}, {sku:"REF-2671", nombre:"Sandalia trekking caballero", cantidad:4}, {sku:"REF-2682", nombre:"Sandalia plataforma dama", cantidad:4}, {sku:"REF-2693", nombre:"Zapatilla niño", cantidad:4}, {sku:"REF-2704", nombre:"Bota chelsea dama", cantidad:4}], motivo:"Devolución de temporada", transportadora:"Envía", placa:"RMX-880", valorMercancia:4780000, etapas:[
     {n:"Se genera el traslado", loc:"869 - FACTORY CENTRO (VVC)", fecha:"20 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"869 - FACTORY CENTRO (VVC)", fecha:"20 jul 2026 · 4:20 pm", resp:"Fatima Rojas", done:true},
     {n:"Recepción en destino", loc:"883 - STIRPE UNICENTRO (VVC)", fecha:"En tránsito", resp:"—", done:false, current:true},
     {n:"Consolidación", loc:"883 - STIRPE UNICENTRO (VVC)", fecha:"Pendiente", resp:"—", done:false},
   ]},
-  {id:"TR-20005", tipo:"Tienda → Tienda", origen:"894 - STIRPE TITAN (BOG)", destino:"840 - DEREK SANTAFE (BOG)", regional:"Reg Centro1", ciudad:"BOGOTA", zona:"Johana Avendaño", fDespacho:"5 jul 2026", fRecepcion:"6 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:16, paquetes:34, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"TBH-045", valorMercancia:9900000, etapas:[
+  {id:"TR-20005", tipo:"Tienda → Tienda", origen:"894 - STIRPE TITAN (BOG)", destino:"840 - DEREK SANTAFE (BOG)", regional:"Reg Centro1", ciudad:"BOGOTA", zona:"Johana Avendaño", fDespacho:"5 jul 2026", fRecepcion:"6 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:16, paquetes:34, productos:[{sku:"REF-2880", nombre:"Sandalia trekking caballero", cantidad:5}, {sku:"REF-2891", nombre:"Bota casual dama", cantidad:5}, {sku:"REF-2902", nombre:"Zapatilla deportiva niña", cantidad:6}, {sku:"REF-2913", nombre:"Tenis training caballero", cantidad:6}, {sku:"REF-2924", nombre:"Tenis deportivo dama", cantidad:6}, {sku:"REF-2935", nombre:"Bota chelsea dama", cantidad:6}], motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"TBH-045", valorMercancia:9900000, etapas:[
     {n:"Se genera el traslado", loc:"894 - STIRPE TITAN (BOG)", fecha:"5 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"894 - STIRPE TITAN (BOG)", fecha:"5 jul 2026 · 8:00 am", resp:"Johana Avendaño", done:true},
     {n:"Recepción en destino", loc:"840 - DEREK SANTAFE (BOG)", fecha:"6 jul 2026 · 12:10 pm", resp:"Johana Avendaño", done:true},
     {n:"Consolidación", loc:"840 - DEREK SANTAFE (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20006", tipo:"Tienda → Tienda", origen:"411 - DEREK NUESTRO (BOG)", destino:"412 - U82 NUESTRO (BOG)", regional:"Reg Centro1", ciudad:"BOGOTA", zona:"Luis Guanchez", fDespacho:"18 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:3, paquetes:5, motivo:"Traslado por talla faltante", transportadora:"Vehículo propio", placa:"SKA-112", valorMercancia:980000, etapas:[
+  {id:"TR-20006", tipo:"Tienda → Tienda", origen:"411 - DEREK NUESTRO (BOG)", destino:"412 - U82 NUESTRO (BOG)", regional:"Reg Centro1", ciudad:"BOGOTA", zona:"Luis Guanchez", fDespacho:"18 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:3, paquetes:5, productos:[{sku:"REF-3100", nombre:"Bota casual dama", cantidad:1}, {sku:"REF-3111", nombre:"Zapato mocasín dama", cantidad:1}, {sku:"REF-3122", nombre:"Tenis running caballero", cantidad:1}, {sku:"REF-3133", nombre:"Tenis skate unisex", cantidad:2}], motivo:"Traslado por talla faltante", transportadora:"Vehículo propio", placa:"SKA-112", valorMercancia:980000, etapas:[
     {n:"Se genera el traslado", loc:"411 - DEREK NUESTRO (BOG)", fecha:"18 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"411 - DEREK NUESTRO (BOG)", fecha:"18 jul 2026 · 1:15 pm", resp:"Luis Guanchez", done:true},
     {n:"Recepción en destino", loc:"412 - U82 NUESTRO (BOG)", fecha:"19 jul 2026 · 9:00 am", resp:"Luis Guanchez", done:true},
     {n:"Consolidación", loc:"412 - U82 NUESTRO (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20008", tipo:"Tienda → Tienda", origen:"884 - STIRPE G. PLAZA DEL SOL (BAQ)", destino:"858 - STIRPE GUATAPURI (VUP)", regional:"Reg Norte", ciudad:"VALLEDUPAR", zona:"Marelyn Montejo", fDespacho:"19 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:2, paquetes:9, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"BAQ-221", valorMercancia:2110000, etapas:[
+  {id:"TR-20008", tipo:"Tienda → Tienda", origen:"884 - STIRPE G. PLAZA DEL SOL (BAQ)", destino:"858 - STIRPE GUATAPURI (VUP)", regional:"Reg Norte", ciudad:"VALLEDUPAR", zona:"Marelyn Montejo", fDespacho:"19 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:2, paquetes:9, productos:[{sku:"REF-3320", nombre:"Tenis running caballero", cantidad:1}, {sku:"REF-3331", nombre:"Zapato mocasín dama", cantidad:2}, {sku:"REF-3342", nombre:"Sandalia plataforma dama", cantidad:2}, {sku:"REF-3353", nombre:"Sandalia trekking caballero", cantidad:2}, {sku:"REF-3364", nombre:"Tenis skate unisex", cantidad:2}], motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"BAQ-221", valorMercancia:2110000, etapas:[
     {n:"Se genera el traslado", loc:"884 - STIRPE G. PLAZA DEL SOL (BAQ)", fecha:"19 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"884 - STIRPE G. PLAZA DEL SOL (BAQ)", fecha:"19 jul 2026 · 8:40 am", resp:"Andrea Moreno", done:true},
     {n:"Escala en CEDI", loc:"CEDI Valledupar", fecha:"19 jul 2026 · 10:15 am", resp:"Operario CEDI", done:true},
     {n:"Recepción en destino", loc:"858 - STIRPE GUATAPURI (VUP)", fecha:"19 jul 2026 · 11:05 am", resp:"Marelyn Montejo", done:true},
     {n:"Consolidación", loc:"858 - STIRPE GUATAPURI (VUP)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20009", tipo:"Tienda → Tienda", origen:"539 - DEREK ALEGRA (BAQ)", destino:"541 - STIRPE ALEGRA (BAQ)", regional:"Reg Norte", ciudad:"BARRANQUILLA", zona:"Andrea Moreno", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:7, motivo:"Balanceo de inventario", transportadora:"Vehículo propio", placa:"BAQ-118", valorMercancia:1560000, etapas:[
+  {id:"TR-20009", tipo:"Tienda → Tienda", origen:"539 - DEREK ALEGRA (BAQ)", destino:"541 - STIRPE ALEGRA (BAQ)", regional:"Reg Norte", ciudad:"BARRANQUILLA", zona:"Andrea Moreno", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:7, productos:[{sku:"REF-3540", nombre:"Zapatilla deportiva niña", cantidad:1}, {sku:"REF-3551", nombre:"Botín cuero dama", cantidad:1}, {sku:"REF-3562", nombre:"Sandalia plataforma dama", cantidad:1}, {sku:"REF-3573", nombre:"Sandalia trekking caballero", cantidad:1}, {sku:"REF-3584", nombre:"Mocasín caballero", cantidad:1}, {sku:"REF-3595", nombre:"Balerina dama", cantidad:2}], motivo:"Balanceo de inventario", transportadora:"Vehículo propio", placa:"BAQ-118", valorMercancia:1560000, etapas:[
     {n:"Se genera el traslado", loc:"539 - DEREK ALEGRA (BAQ)", fecha:"20 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"539 - DEREK ALEGRA (BAQ)", fecha:"20 jul 2026 · 3:10 pm", resp:"Andrea Moreno", done:true},
     {n:"Recepción en destino", loc:"541 - STIRPE ALEGRA (BAQ)", fecha:"En tránsito", resp:"—", done:false, current:true},
     {n:"Consolidación", loc:"541 - STIRPE ALEGRA (BAQ)", fecha:"Pendiente", resp:"—", done:false},
   ]},
-  {id:"TR-20010", tipo:"Tienda → Tienda", origen:"868 - STIRPE CENTRO CRA 7 (VUP)", destino:"833 - DEREK MAYALES (VUP)", regional:"Reg Norte", ciudad:"VALLEDUPAR", zona:"Marelyn Montejo", fDespacho:"10 jul 2026", fRecepcion:"11 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:11, paquetes:19, motivo:"Reposición de inventario", transportadora:"Interrapidísimo", placa:"VUP-076", valorMercancia:6020000, etapas:[
+  {id:"TR-20010", tipo:"Tienda → Tienda", origen:"868 - STIRPE CENTRO CRA 7 (VUP)", destino:"833 - DEREK MAYALES (VUP)", regional:"Reg Norte", ciudad:"VALLEDUPAR", zona:"Marelyn Montejo", fDespacho:"10 jul 2026", fRecepcion:"11 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:11, paquetes:19, productos:[{sku:"REF-3760", nombre:"Zapato mocasín dama", cantidad:4}, {sku:"REF-3771", nombre:"Zapato formal caballero", cantidad:5}, {sku:"REF-3782", nombre:"Sandalia trekking caballero", cantidad:5}, {sku:"REF-3793", nombre:"Bota casual dama", cantidad:5}], motivo:"Reposición de inventario", transportadora:"Interrapidísimo", placa:"VUP-076", valorMercancia:6020000, etapas:[
     {n:"Se genera el traslado", loc:"868 - STIRPE CENTRO CRA 7 (VUP)", fecha:"10 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"868 - STIRPE CENTRO CRA 7 (VUP)", fecha:"10 jul 2026 · 8:00 am", resp:"Marelyn Montejo", done:true},
     {n:"Recepción en destino", loc:"833 - DEREK MAYALES (VUP)", fecha:"11 jul 2026 · 10:40 am", resp:"Marelyn Montejo", done:true},
     {n:"Consolidación", loc:"833 - DEREK MAYALES (VUP)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20011", tipo:"Tienda → Tienda", origen:"878 - STIRPE 3 CRA.14X19 (AXM)", destino:"891 - STIRPE CALLE 28 (MZL)", regional:"Reg Occidente 1", ciudad:"MANIZALES", zona:"Brandon Torres", fDespacho:"16 jul 2026", fRecepcion:"17 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:5, paquetes:10, motivo:"Surtido colección nueva", transportadora:"Coordinadora", placa:"AXM-303", valorMercancia:3870000, etapas:[
+  {id:"TR-20011", tipo:"Tienda → Tienda", origen:"878 - STIRPE 3 CRA.14X19 (AXM)", destino:"891 - STIRPE CALLE 28 (MZL)", regional:"Reg Occidente 1", ciudad:"MANIZALES", zona:"Brandon Torres", fDespacho:"16 jul 2026", fRecepcion:"17 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:5, paquetes:10, productos:[{sku:"REF-3980", nombre:"Mocasín caballero", cantidad:1}, {sku:"REF-3991", nombre:"Bota alta dama", cantidad:1}, {sku:"REF-4002", nombre:"Zapato mocasín dama", cantidad:2}, {sku:"REF-4013", nombre:"Zapato náutico caballero", cantidad:2}, {sku:"REF-4024", nombre:"Bota trabajo caballero", cantidad:2}, {sku:"REF-4035", nombre:"Sandalia sport dama", cantidad:2}], motivo:"Surtido colección nueva", transportadora:"Coordinadora", placa:"AXM-303", valorMercancia:3870000, etapas:[
     {n:"Se genera el traslado", loc:"878 - STIRPE 3 CRA.14X19 (AXM)", fecha:"16 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"878 - STIRPE 3 CRA.14X19 (AXM)", fecha:"16 jul 2026 · 9:20 am", resp:"Abraham Ortega", done:true},
     {n:"Escala en CEDI", loc:"CEDI Manizales", fecha:"16 jul 2026 · 3:00 pm", resp:"Operario CEDI", done:true},
     {n:"Recepción en destino", loc:"891 - STIRPE CALLE 28 (MZL)", fecha:"17 jul 2026 · 12:00 pm", resp:"Brandon Torres", done:true},
     {n:"Consolidación", loc:"891 - STIRPE CALLE 28 (MZL)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20012", tipo:"Tienda → Tienda", origen:"887 - STIRPE CRA.23 (MZL)", destino:"859 - FACTORY CRA.8 (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Angela Martinez", fDespacho:"19 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:2, paquetes:4, motivo:"Traslado por talla faltante", transportadora:"Vehículo propio", placa:"MZL-045", valorMercancia:720000, etapas:[
+  {id:"TR-20012", tipo:"Tienda → Tienda", origen:"887 - STIRPE CRA.23 (MZL)", destino:"859 - FACTORY CRA.8 (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Angela Martinez", fDespacho:"19 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:2, paquetes:4, productos:[{sku:"REF-4200", nombre:"Sandalia sport dama", cantidad:1}, {sku:"REF-4211", nombre:"Balerina dama", cantidad:1}, {sku:"REF-4222", nombre:"Tenis skate unisex", cantidad:1}, {sku:"REF-4233", nombre:"Zapatilla niño", cantidad:1}, {sku:"REF-4244", nombre:"Botín cuero dama", cantidad:1}, {sku:"REF-4255", nombre:"Sandalia trekking caballero", cantidad:1}], motivo:"Traslado por talla faltante", transportadora:"Vehículo propio", placa:"MZL-045", valorMercancia:720000, etapas:[
     {n:"Se genera el traslado", loc:"887 - STIRPE CRA.23 (MZL)", fecha:"19 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"887 - STIRPE CRA.23 (MZL)", fecha:"19 jul 2026 · 10:30 am", resp:"Brandon Torres", done:true},
     {n:"Escala en CEDI", loc:"CEDI Pereira", fecha:"19 jul 2026 · 11:45 am", resp:"Operario CEDI", done:true},
     {n:"Recepción en destino", loc:"859 - FACTORY CRA.8 (PEI)", fecha:"19 jul 2026 · 12:15 pm", resp:"Angela Martinez", done:true},
     {n:"Consolidación", loc:"859 - FACTORY CRA.8 (PEI)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20013", tipo:"Tienda → Tienda", origen:"873 - STIRPE CLL.19 (AXM)", destino:"240 - STIRPE COMERCIO (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Angela Martinez", fDespacho:"7 jul 2026", fRecepcion:"8 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:14, paquetes:25, motivo:"Reposición de inventario", transportadora:"Envía", placa:"PEI-556", valorMercancia:7340000, etapas:[
+  {id:"TR-20013", tipo:"Tienda → Tienda", origen:"873 - STIRPE CLL.19 (AXM)", destino:"240 - STIRPE COMERCIO (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Angela Martinez", fDespacho:"7 jul 2026", fRecepcion:"8 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:14, paquetes:25, productos:[{sku:"REF-4420", nombre:"Sandalia trekking caballero", cantidad:6}, {sku:"REF-4431", nombre:"Tenis skate unisex", cantidad:6}, {sku:"REF-4442", nombre:"Tenis chunky dama", cantidad:6}, {sku:"REF-4453", nombre:"Bota alta dama", cantidad:7}], motivo:"Reposición de inventario", transportadora:"Envía", placa:"PEI-556", valorMercancia:7340000, etapas:[
     {n:"Se genera el traslado", loc:"873 - STIRPE CLL.19 (AXM)", fecha:"7 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"873 - STIRPE CLL.19 (AXM)", fecha:"7 jul 2026 · 7:50 am", resp:"Abraham Ortega", done:true},
     {n:"Escala en CEDI", loc:"CEDI Pereira", fecha:"7 jul 2026 · 4:20 pm", resp:"Operario CEDI", done:true},
     {n:"Recepción en destino", loc:"240 - STIRPE COMERCIO (PEI)", fecha:"8 jul 2026 · 11:20 am", resp:"Angela Martinez", done:true},
     {n:"Consolidación", loc:"240 - STIRPE COMERCIO (PEI)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TR-20014", tipo:"Tienda → Tienda", origen:"810 - DEREK ARBOLEDA (PEI)", destino:"824 - STIRPE ARBOLEDA (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Braulio Calderon", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:6, paquetes:8, motivo:"Balanceo por talla faltante", transportadora:"Vehículo propio", placa:"PEI-201", valorMercancia:1980000, etapas:[
+  {id:"TR-20014", tipo:"Tienda → Tienda", origen:"810 - DEREK ARBOLEDA (PEI)", destino:"824 - STIRPE ARBOLEDA (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Braulio Calderon", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:6, paquetes:8, productos:[{sku:"REF-4640", nombre:"Sandalia sport dama", cantidad:1}, {sku:"REF-4651", nombre:"Tenis skate unisex", cantidad:1}, {sku:"REF-4662", nombre:"Tenis training caballero", cantidad:2}, {sku:"REF-4673", nombre:"Zapato formal caballero", cantidad:2}, {sku:"REF-4684", nombre:"Sandalia plataforma dama", cantidad:2}], motivo:"Balanceo por talla faltante", transportadora:"Vehículo propio", placa:"PEI-201", valorMercancia:1980000, etapas:[
     {n:"Se genera el traslado", loc:"810 - DEREK ARBOLEDA (PEI)", fecha:"15 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"810 - DEREK ARBOLEDA (PEI)", fecha:"15 jul 2026 · 2:40 pm", resp:"Braulio Calderon", done:true},
     {n:"Recepción en destino", loc:"824 - STIRPE ARBOLEDA (PEI)", fecha:"16 jul 2026 · 9:15 am", resp:"Braulio Calderon", done:true},
     {n:"Consolidación", loc:"824 - STIRPE ARBOLEDA (PEI)", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
+  {id:"TR-20019", tipo:"Tienda → Tienda", origen:"864 - STIRPE LA COLINA (BOG)", destino:"865 - DEREK LA COLINA (BOG)", regional:"Reg Centro1", ciudad:"BOGOTA", zona:"Johana Avendaño", fDespacho:"16 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:6, paquetes:11, productos:[{sku:"REF-4860", nombre:"Zapato náutico caballero", cantidad:1}, {sku:"REF-4871", nombre:"Botín cuero dama", cantidad:2}, {sku:"REF-4882", nombre:"Bota trabajo caballero", cantidad:2}, {sku:"REF-4893", nombre:"Tenis running caballero", cantidad:2}, {sku:"REF-4904", nombre:"Bota alta dama", cantidad:2}, {sku:"REF-4915", nombre:"Zapatilla deportiva niña", cantidad:2}], motivo:"Balanceo por talla faltante", transportadora:"Vehículo propio", placa:"BOG-330", valorMercancia:1540000, etapas:[
+    {n:"Se genera el traslado", loc:"864 - STIRPE LA COLINA (BOG)", fecha:"16 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"864 - STIRPE LA COLINA (BOG)", fecha:"16 jul 2026 · 10:15 am", resp:"Johana Avendaño", done:true},
+    {n:"Recepción en destino", loc:"865 - DEREK LA COLINA (BOG)", fecha:"16 jul 2026 · 11:40 am", resp:"Johana Avendaño", done:true},
+    {n:"Consolidación", loc:"865 - DEREK LA COLINA (BOG)", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TR-20020", tipo:"Tienda → Tienda", origen:"841 - DEREK CENTRO CRA 9 (VUP)", destino:"845 - DEREK VIVA (BAQ)", regional:"Reg Norte", ciudad:"BARRANQUILLA", zona:"Andrea Moreno", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:16, productos:[{sku:"REF-5080", nombre:"Zapatilla deportiva niña", cantidad:4}, {sku:"REF-5091", nombre:"Zapato formal caballero", cantidad:4}, {sku:"REF-5102", nombre:"Zapato mocasín dama", cantidad:4}, {sku:"REF-5113", nombre:"Sandalia trekking caballero", cantidad:4}], motivo:"Surtido colección nueva", transportadora:"Interrapidísimo", placa:"VUP-201", valorMercancia:4020000, etapas:[
+    {n:"Se genera el traslado", loc:"841 - DEREK CENTRO CRA 9 (VUP)", fecha:"20 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"841 - DEREK CENTRO CRA 9 (VUP)", fecha:"20 jul 2026 · 9:00 am", resp:"Marelyn Montejo", done:true},
+    {n:"Escala en CEDI", loc:"CEDI Barranquilla", fecha:"En tránsito", resp:"—", done:false, current:true},
+    {n:"Recepción en destino", loc:"845 - DEREK VIVA (BAQ)", fecha:"Pendiente", resp:"—", done:false},
+    {n:"Consolidación", loc:"845 - DEREK VIVA (BAQ)", fecha:"Pendiente", resp:"—", done:false},
+  ]},
+  {id:"TR-20021", tipo:"Tienda → Tienda", origen:"620 - TRAVEL VICTORIA (PEI)", destino:"621 - DEREK VICTORIA (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Angela Martinez", fDespacho:"19 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:3, paquetes:7, productos:[{sku:"REF-5300", nombre:"Bota trabajo caballero", cantidad:1}, {sku:"REF-5311", nombre:"Balerina dama", cantidad:1}, {sku:"REF-5322", nombre:"Tenis training caballero", cantidad:1}, {sku:"REF-5333", nombre:"Bota alta dama", cantidad:2}, {sku:"REF-5344", nombre:"Sandalia trekking caballero", cantidad:2}], motivo:"Traslado por talla faltante", transportadora:"Vehículo propio", placa:"PEI-410", valorMercancia:1230000, etapas:[
+    {n:"Se genera el traslado", loc:"620 - TRAVEL VICTORIA (PEI)", fecha:"19 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"620 - TRAVEL VICTORIA (PEI)", fecha:"19 jul 2026 · 11:00 am", resp:"Angela Martinez", done:true},
+    {n:"Recepción en destino", loc:"621 - DEREK VICTORIA (PEI)", fecha:"19 jul 2026 · 12:20 pm", resp:"Angela Martinez", done:true},
+    {n:"Consolidación", loc:"621 - DEREK VICTORIA (PEI)", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TR-20022", tipo:"Tienda → Tienda", origen:"819 - DEREK COMERCIO CRA 7 (PEI)", destino:"889 - STIRPE CRA.22 (MZL)", regional:"Reg Occidente 1", ciudad:"MANIZALES", zona:"Brandon Torres", fDespacho:"10 jul 2026", fRecepcion:"11 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:10, paquetes:19, productos:[{sku:"REF-5520", nombre:"Zapato formal caballero", cantidad:3}, {sku:"REF-5531", nombre:"Sandalia niña", cantidad:4}, {sku:"REF-5542", nombre:"Bota alta dama", cantidad:4}, {sku:"REF-5553", nombre:"Zapatilla deportiva niña", cantidad:4}, {sku:"REF-5564", nombre:"Bota casual dama", cantidad:4}], motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"PEI-777", valorMercancia:5890000, etapas:[
+    {n:"Se genera el traslado", loc:"819 - DEREK COMERCIO CRA 7 (PEI)", fecha:"10 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"819 - DEREK COMERCIO CRA 7 (PEI)", fecha:"10 jul 2026 · 8:30 am", resp:"Braulio Calderon", done:true},
+    {n:"Escala en CEDI", loc:"CEDI Manizales", fecha:"10 jul 2026 · 3:40 pm", resp:"Operario CEDI", done:true},
+    {n:"Recepción en destino", loc:"889 - STIRPE CRA.22 (MZL)", fecha:"11 jul 2026 · 10:10 am", resp:"Brandon Torres", done:true},
+    {n:"Consolidación", loc:"889 - STIRPE CRA.22 (MZL)", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TR-20027", tipo:"Tienda → Tienda", origen:"876 - DEREK CRA13 (AXM)", destino:"892 - DEREK CALLE 28 (MZL)", regional:"Reg Occidente 1", ciudad:"MANIZALES", zona:"Brandon Torres", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:9, motivo:"Reposición de inventario", transportadora:"Coordinadora", placa:"AXM-410", valorMercancia:2680000, productos:[{sku:"REF-4010", nombre:"Tenis skate unisex", cantidad:5}, {sku:"REF-4021", nombre:"Zapato náutico caballero", cantidad:4}], etapas:[
+    {n:"Se genera el traslado", loc:"876 - DEREK CRA13 (AXM)", fecha:"20 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"876 - DEREK CRA13 (AXM)", fecha:"20 jul 2026 · 9:15 am", resp:"Abraham Ortega", done:true},
+    {n:"Escala en CEDI", loc:"CEDI Manizales", fecha:"En tránsito hacia CEDI", resp:"—", done:false, current:true},
+    {n:"Recepción en destino", loc:"892 - DEREK CALLE 28 (MZL)", fecha:"Pendiente", resp:"—", done:false},
+    {n:"Consolidación", loc:"892 - DEREK CALLE 28 (MZL)", fecha:"Pendiente", resp:"—", done:false},
+  ]},
+  {id:"TR-20028", tipo:"Tienda → Tienda", origen:"835 - STIRPE MAYALES (VUP)", destino:"534 - FACTORY STORE OUTLET (BAQ)", regional:"Reg Norte", ciudad:"BARRANQUILLA", zona:"Andrea Moreno", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:14, motivo:"Surtido colección nueva", transportadora:"Interrapidísimo", placa:"VUP-330", valorMercancia:3950000, productos:[{sku:"REF-4032", nombre:"Bota trabajo caballero", cantidad:7}, {sku:"REF-4043", nombre:"Sandalia niña", cantidad:7}], etapas:[
+    {n:"Se genera el traslado", loc:"835 - STIRPE MAYALES (VUP)", fecha:"20 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"835 - STIRPE MAYALES (VUP)", fecha:"20 jul 2026 · 7:40 am", resp:"Marelyn Montejo", done:true},
+    {n:"Escala en CEDI", loc:"CEDI Barranquilla", fecha:"En tránsito hacia CEDI", resp:"—", done:false, current:true},
+    {n:"Recepción en destino", loc:"534 - FACTORY STORE OUTLET (BAQ)", fecha:"Pendiente", resp:"—", done:false},
+    {n:"Consolidación", loc:"534 - FACTORY STORE OUTLET (BAQ)", fecha:"Pendiente", resp:"—", done:false},
+  ]},
+  {id:"TR-20029", tipo:"Tienda → Tienda", origen:"877 - TRAVEL CRA14X17 (AXM)", destino:"530 - TRAVEL ALCIDES (PEI)", regional:"Reg Occidente 1", ciudad:"PEREIRA", zona:"Angela Martinez", fDespacho:"19 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:2, paquetes:11, motivo:"Balanceo de inventario", transportadora:"Coordinadora", placa:"AXM-520", valorMercancia:3210000, productos:[{sku:"REF-4054", nombre:"Mocasín caballero", cantidad:6}, {sku:"REF-4065", nombre:"Balerina dama", cantidad:5}], etapas:[
+    {n:"Se genera el traslado", loc:"877 - TRAVEL CRA14X17 (AXM)", fecha:"19 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"877 - TRAVEL CRA14X17 (AXM)", fecha:"19 jul 2026 · 8:00 am", resp:"Abraham Ortega", done:true},
+    {n:"Escala en CEDI", loc:"CEDI Pereira", fecha:"19 jul 2026 · 3:15 pm", resp:"Operario CEDI", done:true},
+    {n:"Recepción en destino", loc:"530 - TRAVEL ALCIDES (PEI)", fecha:"En tránsito", resp:"—", done:false, current:true},
+    {n:"Consolidación", loc:"530 - TRAVEL ALCIDES (PEI)", fecha:"Pendiente", resp:"—", done:false},
+  ]},
+  {id:"TR-20030", tipo:"Tienda → Tienda", origen:"770 - DEREK CENTRO MAYOR (BOG)", destino:"837 - DEREK UNICENTRO (VVC)", regional:"Reg Centro", ciudad:"VILLAVICENCIO", zona:"Fatima Rojas", fDespacho:"18 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:3, paquetes:17, motivo:"Reposición de inventario", transportadora:"Envía", placa:"BOG-740", valorMercancia:4870000, productos:[{sku:"REF-4076", nombre:"Tenis urbano unisex", cantidad:9}, {sku:"REF-4087", nombre:"Zapato formal caballero", cantidad:8}], etapas:[
+    {n:"Se genera el traslado", loc:"770 - DEREK CENTRO MAYOR (BOG)", fecha:"18 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"770 - DEREK CENTRO MAYOR (BOG)", fecha:"18 jul 2026 · 9:50 am", resp:"Cristina Mancera", done:true},
+    {n:"Escala en CEDI", loc:"CEDI Bogotá", fecha:"18 jul 2026 · 2:10 pm", resp:"Operario CEDI", done:true},
+    {n:"Recepción en destino", loc:"837 - DEREK UNICENTRO (VVC)", fecha:"En tránsito", resp:"—", done:false, current:true},
+    {n:"Consolidación", loc:"837 - DEREK UNICENTRO (VVC)", fecha:"Pendiente", resp:"—", done:false},
+  ]},
 ];
 
 /* ---------- Traslados de prueba: Administrativo y CEDI (datos reales de bodegas) ---------- */
 const TRASLADOS_ADMIN = [
-  {id:"TRA-001", tipo:"Administrativo Interno", origen:"961 - GESTION DOCUMENTAL", destino:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", ciudad:"BUCARAMANGA", coordinacion:"Elizabeth Arenas", fDespacho:"6 jul 2026", fRecepcion:"7 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:12, paquetes:6, motivo:"Traslado de archivo por contingencia", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:850000, etapas:[
+  {id:"TRA-001", tipo:"Administrativo Interno", origen:"961 - GESTION DOCUMENTAL", destino:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", ciudad:"BUCARAMANGA", coordinacion:"Elizabeth Arenas", fDespacho:"6 jul 2026", fRecepcion:"7 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:12, paquetes:6, productos:[{sku:"REF-5740", nombre:"Tenis skate unisex", cantidad:1}, {sku:"REF-5751", nombre:"Bota chelsea dama", cantidad:1}, {sku:"REF-5762", nombre:"Sandalia trekking caballero", cantidad:1}, {sku:"REF-5773", nombre:"Sandalia sport dama", cantidad:1}, {sku:"REF-5784", nombre:"Zapatilla deportiva niña", cantidad:1}, {sku:"REF-5795", nombre:"Tenis deportivo dama", cantidad:1}], motivo:"Traslado de archivo por contingencia", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:850000, etapas:[
     {n:"Se genera el traslado", loc:"961 - GESTION DOCUMENTAL", fecha:"6 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"961 - GESTION DOCUMENTAL", fecha:"6 jul 2026 · 9:10 am", resp:"Elizabeth Arenas", done:true},
     {n:"Recepción en destino", loc:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", fecha:"7 jul 2026 · 11:00 am", resp:"Paola Gallo", done:true},
     {n:"Consolidación", loc:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TRA-002", tipo:"Administrativo Interno", origen:"960 - CONTABILIDAD", destino:"956 - FINANCIERA", ciudad:"BUCARAMANGA", coordinacion:"Zully Uni Campos", fDespacho:"18 jul 2026", fRecepcion:"18 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:4, paquetes:3, motivo:"Traslado de soportes contables", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:120000, etapas:[
+  {id:"TRA-002", tipo:"Administrativo Interno", origen:"960 - CONTABILIDAD", destino:"956 - FINANCIERA", ciudad:"BUCARAMANGA", coordinacion:"Zully Uni Campos", fDespacho:"18 jul 2026", fRecepcion:"18 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:4, paquetes:3, productos:[{sku:"REF-5960", nombre:"Balerina dama", cantidad:1}, {sku:"REF-5971", nombre:"Tenis urbano unisex", cantidad:1}, {sku:"REF-5982", nombre:"Sandalia sport dama", cantidad:1}, {sku:"REF-5993", nombre:"Zapatilla deportiva niña", cantidad:1}, {sku:"REF-6004", nombre:"Botín cuero dama", cantidad:1}, {sku:"REF-6015", nombre:"Sandalia plataforma dama", cantidad:1}], motivo:"Traslado de soportes contables", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:120000, etapas:[
     {n:"Se genera el traslado", loc:"960 - CONTABILIDAD", fecha:"18 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"960 - CONTABILIDAD", fecha:"18 jul 2026 · 2:20 pm", resp:"Zully Uni Campos", done:true},
     {n:"Recepción en destino", loc:"956 - FINANCIERA", fecha:"18 jul 2026 · 3:45 pm", resp:"Juan Camilo Mejia", done:true},
     {n:"Consolidación", loc:"956 - FINANCIERA", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TRA-003", tipo:"Administrativo Interno", origen:"975 - AUDITORIA INTERNA", destino:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", ciudad:"BUCARAMANGA", coordinacion:"Paola Gallo", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:2, motivo:"Traslado de evidencias de auditoría", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:60000, etapas:[
+  {id:"TRA-003", tipo:"Administrativo Interno", origen:"975 - AUDITORIA INTERNA", destino:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", ciudad:"BUCARAMANGA", coordinacion:"Paola Gallo", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:2, productos:[{sku:"REF-6180", nombre:"Bota casual dama", cantidad:1}, {sku:"REF-6191", nombre:"Mocasín caballero", cantidad:1}, {sku:"REF-6202", nombre:"Tenis skate unisex", cantidad:1}, {sku:"REF-6213", nombre:"Tenis running caballero", cantidad:1}, {sku:"REF-6224", nombre:"Zapatilla niño", cantidad:1}], motivo:"Traslado de evidencias de auditoría", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:60000, etapas:[
     {n:"Se genera el traslado", loc:"975 - AUDITORIA INTERNA", fecha:"20 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"975 - AUDITORIA INTERNA", fecha:"20 jul 2026 · 4:00 pm", resp:"Paola Gallo", done:true},
     {n:"Recepción en destino", loc:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", fecha:"En tránsito", resp:"—", done:false, current:true},
     {n:"Consolidación", loc:"962 - ACTIVOS FIJ. CONTINGENCIAS CAB.CRA33 48", fecha:"Pendiente", resp:"—", done:false},
   ]},
-  {id:"TRA-004", tipo:"Administrativo Interno", origen:"985 - MANTENIMIENTO", destino:"990 - SISTEMAS", ciudad:"BUCARAMANGA", coordinacion:"Elizabeth Arenas", fDespacho:"14 jul 2026", fRecepcion:"15 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:7, paquetes:4, motivo:"Traslado de equipos", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:2300000, etapas:[
+  {id:"TRA-004", tipo:"Administrativo Interno", origen:"985 - MANTENIMIENTO", destino:"990 - SISTEMAS", ciudad:"BUCARAMANGA", coordinacion:"Elizabeth Arenas", fDespacho:"14 jul 2026", fRecepcion:"15 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:7, paquetes:4, productos:[{sku:"REF-6400", nombre:"Tenis deportivo dama", cantidad:1}, {sku:"REF-6411", nombre:"Bota alta dama", cantidad:1}, {sku:"REF-6422", nombre:"Zapato formal caballero", cantidad:1}, {sku:"REF-6433", nombre:"Botín cuero dama", cantidad:1}, {sku:"REF-6444", nombre:"Sandalia sport dama", cantidad:1}], motivo:"Traslado de equipos", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:2300000, etapas:[
     {n:"Se genera el traslado", loc:"985 - MANTENIMIENTO", fecha:"14 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"985 - MANTENIMIENTO", fecha:"14 jul 2026 · 8:30 am", resp:"Elizabeth Arenas", done:true},
     {n:"Recepción en destino", loc:"990 - SISTEMAS", fecha:"15 jul 2026 · 10:15 am", resp:"Elizabeth Arenas", done:true},
     {n:"Consolidación", loc:"990 - SISTEMAS", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TRA-005", tipo:"Administrativo Interno", origen:"987 - SAGRILAFT BG", destino:"1 - GENERAL ADMINISTRATIVO", ciudad:"BUCARAMANGA", coordinacion:"Adriana Pardo", fDespacho:"3 jul 2026", fRecepcion:"4 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:15, paquetes:5, motivo:"Traslado de documentación regulatoria", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:150000, etapas:[
+  {id:"TRA-005", tipo:"Administrativo Interno", origen:"987 - SAGRILAFT BG", destino:"1 - GENERAL ADMINISTRATIVO", ciudad:"BUCARAMANGA", coordinacion:"Adriana Pardo", fDespacho:"3 jul 2026", fRecepcion:"4 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:15, paquetes:5, productos:[{sku:"REF-6620", nombre:"Zapato mocasín dama", cantidad:1}, {sku:"REF-6631", nombre:"Sandalia niña", cantidad:1}, {sku:"REF-6642", nombre:"Tenis running caballero", cantidad:1}, {sku:"REF-6653", nombre:"Zapato náutico caballero", cantidad:1}, {sku:"REF-6664", nombre:"Balerina dama", cantidad:1}], motivo:"Traslado de documentación regulatoria", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:150000, etapas:[
     {n:"Se genera el traslado", loc:"987 - SAGRILAFT BG", fecha:"3 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"987 - SAGRILAFT BG", fecha:"3 jul 2026 · 9:00 am", resp:"Adriana Pardo", done:true},
     {n:"Recepción en destino", loc:"1 - GENERAL ADMINISTRATIVO", fecha:"4 jul 2026 · 11:40 am", resp:"Elizabeth Arenas", done:true},
     {n:"Consolidación", loc:"1 - GENERAL ADMINISTRATIVO", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
+  {id:"TRA-006", tipo:"Administrativo Interno", origen:"955 - GERENCIA GENERAL", destino:"957 - GERENCIA ADMINISTRATIVA", ciudad:"BUCARAMANGA", coordinacion:"Elizabeth Arenas", fDespacho:"16 jul 2026", fRecepcion:"17 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:5, paquetes:3, productos:[{sku:"REF-6840", nombre:"Tenis deportivo dama", cantidad:1}, {sku:"REF-6851", nombre:"Zapatilla niño", cantidad:1}, {sku:"REF-6862", nombre:"Tenis running caballero", cantidad:1}, {sku:"REF-6873", nombre:"Zapato formal caballero", cantidad:1}, {sku:"REF-6884", nombre:"Botín cuero dama", cantidad:1}, {sku:"REF-6895", nombre:"Tenis training caballero", cantidad:1}], motivo:"Traslado de correspondencia", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:90000, etapas:[
+    {n:"Se genera el traslado", loc:"955 - GERENCIA GENERAL", fecha:"16 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"955 - GERENCIA GENERAL", fecha:"16 jul 2026 · 9:00 am", resp:"Fabian Barrera", done:true},
+    {n:"Recepción en destino", loc:"957 - GERENCIA ADMINISTRATIVA", fecha:"17 jul 2026 · 8:45 am", resp:"Elizabeth Arenas", done:true},
+    {n:"Consolidación", loc:"957 - GERENCIA ADMINISTRATIVA", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TRA-007", tipo:"Administrativo Interno", origen:"980 - DPTO. GESTION HUMANA", destino:"981 - SALUD OCUPACIONAL", ciudad:"BUCARAMANGA", coordinacion:"Patricia Villareal", fDespacho:"19 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:2, paquetes:2, productos:[{sku:"REF-7060", nombre:"Zapatilla deportiva niña", cantidad:1}, {sku:"REF-7071", nombre:"Zapatilla niño", cantidad:1}, {sku:"REF-7082", nombre:"Tenis urbano unisex", cantidad:1}, {sku:"REF-7093", nombre:"Bota alta dama", cantidad:1}], motivo:"Traslado de expedientes médicos", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:40000, etapas:[
+    {n:"Se genera el traslado", loc:"980 - DPTO. GESTION HUMANA", fecha:"19 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"980 - DPTO. GESTION HUMANA", fecha:"19 jul 2026 · 10:20 am", resp:"Patricia Villareal", done:true},
+    {n:"Recepción en destino", loc:"981 - SALUD OCUPACIONAL", fecha:"19 jul 2026 · 11:00 am", resp:"Patricia Villareal", done:true},
+    {n:"Consolidación", loc:"981 - SALUD OCUPACIONAL", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TRA-008", tipo:"Administrativo Interno", origen:"907 - Community 1", destino:"908 - Community 2", ciudad:"BUCARAMANGA", coordinacion:"Adriana Pardo", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:5, productos:[{sku:"REF-7280", nombre:"Botín cuero dama", cantidad:1}, {sku:"REF-7291", nombre:"Sandalia niña", cantidad:1}, {sku:"REF-7302", nombre:"Tenis skate unisex", cantidad:1}, {sku:"REF-7313", nombre:"Tenis urbano unisex", cantidad:1}, {sku:"REF-7324", nombre:"Tenis running caballero", cantidad:1}, {sku:"REF-7335", nombre:"Zapato náutico caballero", cantidad:1}], motivo:"Traslado de material promocional", transportadora:"Mensajería interna", placa:"N/A", valorMercancia:150000, etapas:[
+    {n:"Se genera el traslado", loc:"907 - Community 1", fecha:"20 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"907 - Community 1", fecha:"20 jul 2026 · 2:00 pm", resp:"Adriana Pardo", done:true},
+    {n:"Recepción en destino", loc:"908 - Community 2", fecha:"En tránsito", resp:"—", done:false, current:true},
+    {n:"Consolidación", loc:"908 - Community 2", fecha:"Pendiente", resp:"—", done:false},
+  ]},
 ];
 
 const TRASLADOS_CEDI = [
-  {id:"TRC-001", tipo:"CEDI Interno", origen:"602 - DEVOLUCIONES POR CALIDAD DE TIENDAS", destino:"603 - GARANTIAS EN ABANDONO", ciudad:"BUCARAMANGA", coordinacion:"Sin asignar", fDespacho:"8 jul 2026", fRecepcion:"9 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:11, paquetes:40, motivo:"Clasificación de devoluciones", transportadora:"Vehículo propio", placa:"CDI-101", valorMercancia:3200000, etapas:[
+  {id:"TRC-001", tipo:"CEDI Interno", origen:"602 - DEVOLUCIONES POR CALIDAD DE TIENDAS", destino:"603 - GARANTIAS EN ABANDONO", ciudad:"BUCARAMANGA", coordinacion:"Sin asignar", fDespacho:"8 jul 2026", fRecepcion:"9 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:11, paquetes:40, productos:[{sku:"REF-7500", nombre:"Balerina dama", cantidad:6}, {sku:"REF-7511", nombre:"Tenis training caballero", cantidad:6}, {sku:"REF-7522", nombre:"Sandalia trekking caballero", cantidad:7}, {sku:"REF-7533", nombre:"Bota trabajo caballero", cantidad:7}, {sku:"REF-7544", nombre:"Tenis running caballero", cantidad:7}, {sku:"REF-7555", nombre:"Tenis chunky dama", cantidad:7}], motivo:"Clasificación de devoluciones", transportadora:"Vehículo propio", placa:"CDI-101", valorMercancia:3200000, etapas:[
     {n:"Se genera el traslado", loc:"602 - DEVOLUCIONES POR CALIDAD DE TIENDAS", fecha:"8 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"602 - DEVOLUCIONES POR CALIDAD DE TIENDAS", fecha:"8 jul 2026 · 8:15 am", resp:"Operario CEDI", done:true},
     {n:"Recepción en destino", loc:"603 - GARANTIAS EN ABANDONO", fecha:"9 jul 2026 · 10:30 am", resp:"Operario CEDI", done:true},
     {n:"Consolidación", loc:"603 - GARANTIAS EN ABANDONO", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TRC-002", tipo:"CEDI Interno", origen:"718 - TALLERES DE RELOJES", destino:"720 - SEGUNDAS DE TALLERES EN TRANSITO", ciudad:"BUCARAMANGA", coordinacion:"Sin asignar", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:6, paquetes:15, motivo:"Traslado a segundas", transportadora:"Vehículo propio", placa:"CDI-102", valorMercancia:980000, etapas:[
+  {id:"TRC-002", tipo:"CEDI Interno", origen:"718 - TALLERES DE RELOJES", destino:"720 - SEGUNDAS DE TALLERES EN TRANSITO", ciudad:"BUCARAMANGA", coordinacion:"Sin asignar", fDespacho:"15 jul 2026", fRecepcion:"16 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:6, paquetes:15, productos:[{sku:"REF-7720", nombre:"Bota chelsea dama", cantidad:2}, {sku:"REF-7731", nombre:"Bota casual dama", cantidad:2}, {sku:"REF-7742", nombre:"Sandalia sport dama", cantidad:2}, {sku:"REF-7753", nombre:"Zapato mocasín dama", cantidad:3}, {sku:"REF-7764", nombre:"Tenis deportivo dama", cantidad:3}, {sku:"REF-7775", nombre:"Sandalia trekking caballero", cantidad:3}], motivo:"Traslado a segundas", transportadora:"Vehículo propio", placa:"CDI-102", valorMercancia:980000, etapas:[
     {n:"Se genera el traslado", loc:"718 - TALLERES DE RELOJES", fecha:"15 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"718 - TALLERES DE RELOJES", fecha:"15 jul 2026 · 1:00 pm", resp:"Operario CEDI", done:true},
     {n:"Recepción en destino", loc:"720 - SEGUNDAS DE TALLERES EN TRANSITO", fecha:"16 jul 2026 · 9:20 am", resp:"Operario CEDI", done:true},
     {n:"Consolidación", loc:"720 - SEGUNDAS DE TALLERES EN TRANSITO", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TRC-003", tipo:"CEDI Interno", origen:"101 - SEGUNDAS", destino:"103 - PROMOCION", ciudad:"BUCARAMANGA", coordinacion:"Jorge Eduardo Valencia", fDespacho:"18 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:3, paquetes:22, motivo:"Reclasificación a promoción", transportadora:"Vehículo propio", placa:"CDI-103", valorMercancia:4100000, etapas:[
+  {id:"TRC-003", tipo:"CEDI Interno", origen:"101 - SEGUNDAS", destino:"103 - PROMOCION", ciudad:"BUCARAMANGA", coordinacion:"Jorge Eduardo Valencia", fDespacho:"18 jul 2026", fRecepcion:"19 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:3, paquetes:22, productos:[{sku:"REF-7940", nombre:"Tenis deportivo dama", cantidad:4}, {sku:"REF-7951", nombre:"Sandalia plataforma dama", cantidad:4}, {sku:"REF-7962", nombre:"Bota alta dama", cantidad:4}, {sku:"REF-7973", nombre:"Bota chelsea dama", cantidad:5}, {sku:"REF-7984", nombre:"Bota casual dama", cantidad:5}], motivo:"Reclasificación a promoción", transportadora:"Vehículo propio", placa:"CDI-103", valorMercancia:4100000, etapas:[
     {n:"Se genera el traslado", loc:"101 - SEGUNDAS", fecha:"18 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"101 - SEGUNDAS", fecha:"18 jul 2026 · 10:00 am", resp:"Jorge Eduardo Valencia", done:true},
     {n:"Recepción en destino", loc:"103 - PROMOCION", fecha:"19 jul 2026 · 8:45 am", resp:"Jorge Eduardo Valencia", done:true},
     {n:"Consolidación", loc:"103 - PROMOCION", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TRC-004", tipo:"CEDI Interno", origen:"400 - INSUMOS MERCADEO", destino:"600 - DEVOLUCION CALIDAD EN TRANSITO CLIENTES", ciudad:"BUCARAMANGA", coordinacion:"Yessid Garcés", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:8, motivo:"Traslado de insumos", transportadora:"Vehículo propio", placa:"CDI-104", valorMercancia:560000, etapas:[
+  {id:"TRC-004", tipo:"CEDI Interno", origen:"400 - INSUMOS MERCADEO", destino:"600 - DEVOLUCION CALIDAD EN TRANSITO CLIENTES", ciudad:"BUCARAMANGA", coordinacion:"Yessid Garcés", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:8, productos:[{sku:"REF-8160", nombre:"Zapato formal caballero", cantidad:2}, {sku:"REF-8171", nombre:"Mocasín caballero", cantidad:2}, {sku:"REF-8182", nombre:"Sandalia sport dama", cantidad:2}, {sku:"REF-8193", nombre:"Botín cuero dama", cantidad:2}], motivo:"Traslado de insumos", transportadora:"Vehículo propio", placa:"CDI-104", valorMercancia:560000, etapas:[
     {n:"Se genera el traslado", loc:"400 - INSUMOS MERCADEO", fecha:"20 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"400 - INSUMOS MERCADEO", fecha:"20 jul 2026 · 3:30 pm", resp:"Yessid Garcés", done:true},
     {n:"Recepción en destino", loc:"600 - DEVOLUCION CALIDAD EN TRANSITO CLIENTES", fecha:"En tránsito", resp:"—", done:false, current:true},
     {n:"Consolidación", loc:"600 - DEVOLUCION CALIDAD EN TRANSITO CLIENTES", fecha:"Pendiente", resp:"—", done:false},
   ]},
-  {id:"TRC-005", tipo:"CEDI Interno", origen:"601 - DEVOLUCION PROVEEDORES", destino:"104 - CONGELADOS PROMOCION", ciudad:"GIRON", coordinacion:"Monica Castro", fDespacho:"11 jul 2026", fRecepcion:"12 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:9, paquetes:30, motivo:"Traslado a bodega Girón", transportadora:"Vehículo propio", placa:"CDI-105", valorMercancia:5400000, etapas:[
+  {id:"TRC-005", tipo:"CEDI Interno", origen:"601 - DEVOLUCION PROVEEDORES", destino:"104 - CONGELADOS PROMOCION", ciudad:"GIRON", coordinacion:"Monica Castro", fDespacho:"11 jul 2026", fRecepcion:"12 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:9, paquetes:30, productos:[{sku:"REF-8380", nombre:"Bota trabajo caballero", cantidad:7}, {sku:"REF-8391", nombre:"Tenis training caballero", cantidad:7}, {sku:"REF-8402", nombre:"Bota casual dama", cantidad:8}, {sku:"REF-8413", nombre:"Sandalia plataforma dama", cantidad:8}], motivo:"Traslado a bodega Girón", transportadora:"Vehículo propio", placa:"CDI-105", valorMercancia:5400000, etapas:[
     {n:"Se genera el traslado", loc:"601 - DEVOLUCION PROVEEDORES", fecha:"11 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"601 - DEVOLUCION PROVEEDORES", fecha:"11 jul 2026 · 8:00 am", resp:"Operario CEDI", done:true},
     {n:"Recepción en destino", loc:"104 - CONGELADOS PROMOCION", fecha:"12 jul 2026 · 11:15 am", resp:"Monica Castro", done:true},
     {n:"Consolidación", loc:"104 - CONGELADOS PROMOCION", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
-  {id:"TRC-006", tipo:"CEDI Interno", origen:"717 - RECUPERACIONES", destino:"100 - REPOSICION", ciudad:"GIRON", coordinacion:"Elizabeth Arenas", fDespacho:"6 jul 2026", fRecepcion:"7 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:14, paquetes:18, motivo:"Recuperación a reposición", transportadora:"Vehículo propio", placa:"CDI-106", valorMercancia:2750000, etapas:[
+  {id:"TRC-006", tipo:"CEDI Interno", origen:"717 - RECUPERACIONES", destino:"100 - REPOSICION", ciudad:"GIRON", coordinacion:"Elizabeth Arenas", fDespacho:"6 jul 2026", fRecepcion:"7 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:14, paquetes:18, productos:[{sku:"REF-8600", nombre:"Sandalia trekking caballero", cantidad:4}, {sku:"REF-8611", nombre:"Tenis running caballero", cantidad:4}, {sku:"REF-8622", nombre:"Zapato mocasín dama", cantidad:5}, {sku:"REF-8633", nombre:"Sandalia plataforma dama", cantidad:5}], motivo:"Recuperación a reposición", transportadora:"Vehículo propio", placa:"CDI-106", valorMercancia:2750000, etapas:[
     {n:"Se genera el traslado", loc:"717 - RECUPERACIONES", fecha:"6 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
     {n:"Despacho", loc:"717 - RECUPERACIONES", fecha:"6 jul 2026 · 9:40 am", resp:"Juliana Otero", done:true},
     {n:"Recepción en destino", loc:"100 - REPOSICION", fecha:"7 jul 2026 · 1:05 pm", resp:"Elizabeth Arenas", done:true},
     {n:"Consolidación", loc:"100 - REPOSICION", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TRC-007", tipo:"CEDI Interno", origen:"601 - DEVOLUCION PROVEEDORES", destino:"603 - GARANTIAS EN ABANDONO", ciudad:"BUCARAMANGA", coordinacion:"Sin asignar", fDespacho:"13 jul 2026", fRecepcion:"14 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:8, paquetes:26, productos:[{sku:"REF-8820", nombre:"Tenis training caballero", cantidad:5}, {sku:"REF-8831", nombre:"Tenis urbano unisex", cantidad:5}, {sku:"REF-8842", nombre:"Zapato formal caballero", cantidad:5}, {sku:"REF-8853", nombre:"Mocasín caballero", cantidad:5}, {sku:"REF-8864", nombre:"Tenis deportivo dama", cantidad:6}], motivo:"Reclasificación de devolución de proveedor", transportadora:"Vehículo propio", placa:"CDI-107", valorMercancia:2900000, etapas:[
+    {n:"Se genera el traslado", loc:"601 - DEVOLUCION PROVEEDORES", fecha:"13 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"601 - DEVOLUCION PROVEEDORES", fecha:"13 jul 2026 · 8:00 am", resp:"Operario CEDI", done:true},
+    {n:"Recepción en destino", loc:"603 - GARANTIAS EN ABANDONO", fecha:"14 jul 2026 · 9:40 am", resp:"Operario CEDI", done:true},
+    {n:"Consolidación", loc:"603 - GARANTIAS EN ABANDONO", fecha:"Pendiente", resp:"—", done:false, current:true},
+  ]},
+  {id:"TRC-008", tipo:"CEDI Interno", origen:"103 - PROMOCION", destino:"400 - INSUMOS MERCADEO", ciudad:"BUCARAMANGA", coordinacion:"Jorge Eduardo Valencia", fDespacho:"20 jul 2026", fRecepcion:null, fConsolida:null, estado:"en_transito", dias:1, paquetes:12, productos:[{sku:"REF-9040", nombre:"Bota chelsea dama", cantidad:3}, {sku:"REF-9051", nombre:"Sandalia niña", cantidad:3}, {sku:"REF-9062", nombre:"Balerina dama", cantidad:3}, {sku:"REF-9073", nombre:"Tenis training caballero", cantidad:3}], motivo:"Traslado de material promocional", transportadora:"Vehículo propio", placa:"CDI-108", valorMercancia:1450000, etapas:[
+    {n:"Se genera el traslado", loc:"103 - PROMOCION", fecha:"20 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"103 - PROMOCION", fecha:"20 jul 2026 · 3:20 pm", resp:"Jorge Eduardo Valencia", done:true},
+    {n:"Recepción en destino", loc:"400 - INSUMOS MERCADEO", fecha:"En tránsito", resp:"—", done:false, current:true},
+    {n:"Consolidación", loc:"400 - INSUMOS MERCADEO", fecha:"Pendiente", resp:"—", done:false},
+  ]},
+  {id:"TRC-009", tipo:"CEDI Interno", origen:"717 - RECUPERACIONES", destino:"602 - DEVOLUCIONES POR CALIDAD DE TIENDAS", ciudad:"BUCARAMANGA", coordinacion:"Juliana Otero", fDespacho:"5 jul 2026", fRecepcion:"6 jul 2026", fConsolida:null, estado:"pend_consolidar", dias:16, paquetes:35, productos:[{sku:"REF-9260", nombre:"Bota alta dama", cantidad:7}, {sku:"REF-9271", nombre:"Sandalia plataforma dama", cantidad:7}, {sku:"REF-9282", nombre:"Sandalia sport dama", cantidad:7}, {sku:"REF-9293", nombre:"Tenis skate unisex", cantidad:7}, {sku:"REF-9304", nombre:"Zapato formal caballero", cantidad:7}], motivo:"Reclasificación de recuperación", transportadora:"Vehículo propio", placa:"CDI-109", valorMercancia:6200000, etapas:[
+    {n:"Se genera el traslado", loc:"717 - RECUPERACIONES", fecha:"5 jul 2026 · antes de despacho", resp:"Sistema (CRM)", done:true},
+    {n:"Despacho", loc:"717 - RECUPERACIONES", fecha:"5 jul 2026 · 8:10 am", resp:"Juliana Otero", done:true},
+    {n:"Recepción en destino", loc:"602 - DEVOLUCIONES POR CALIDAD DE TIENDAS", fecha:"6 jul 2026 · 9:00 am", resp:"Operario CEDI", done:true},
+    {n:"Consolidación", loc:"602 - DEVOLUCIONES POR CALIDAD DE TIENDAS", fecha:"Pendiente", resp:"—", done:false, current:true},
   ]},
 ];
 
@@ -574,6 +684,15 @@ function estadoLabel(t){
   return "Recepcionado";
 }
 
+function toggleContenido(){
+  const panel = document.getElementById("contenidoPanel");
+  const chevron = document.getElementById("contenidoChevron");
+  if(!panel) return;
+  const abierto = panel.style.display !== "none";
+  panel.style.display = abierto ? "none" : "block";
+  if(chevron) chevron.textContent = abierto ? "›" : "︿";
+}
+
 function updateTabsUI(){
   document.getElementById("tabDash").classList.toggle("active", currentTab==="dash");
   document.getElementById("tabList").classList.toggle("active", currentTab==="list");
@@ -677,7 +796,6 @@ function thresholdChipsHTML(view){
 
 function passesThreshold(t, minVal){
   if(minVal === null) return true;
-  if(t.estado !== "pend_consolidar") return true;
   if(minVal === 10) return t.dias >= 10;
   if(minVal === 5) return t.dias >= 5 && t.dias < 10;
   return t.dias >= 2 && t.dias < 5;
@@ -756,19 +874,22 @@ function segmentListHTML(){
 function renderDashboardRoot(){
   const all = combinedList();
   const pend = all.filter(t => t.estado === "pend_consolidar");
-  const alertas = pend.filter(t => t.dias >= 10).length;
   const avgDias = pend.length ? Math.round(pend.reduce((a,t)=>a+t.dias,0)/pend.length) : 0;
+
+  const pendFiltrado = pend.filter(t=>passesThreshold(t, minDiasDash));
+  const pvpTotal = pendFiltrado.reduce((sum,t)=>sum+t.valorMercancia,0);
+  const transitoFiltrado = all.filter(t=>t.estado==='en_transito' && passesThreshold(t, minDiasDash));
 
   let html = `
     <div class="kpi-grid">
       <div class="kpi">
         <div class="k-label">📦 Sin consolidar</div>
-        <div class="k-value">${pend.length}</div>
-        <div class="k-sub ${alertas>0?'up-red':'up-green'}">${alertas} en alerta</div>
+        <div class="k-value">${pendFiltrado.length}</div>
+        <div class="k-sub pvp-highlight">$${pvpTotal.toLocaleString('es-CO')} PVP</div>
       </div>
       <div class="kpi">
         <div class="k-label">🚚 En tránsito</div>
-        <div class="k-value">${all.filter(t=>t.estado==='en_transito').length}</div>
+        <div class="k-value">${transitoFiltrado.length}</div>
         <div class="k-sub up-green">hacia destino</div>
       </div>
       <div class="kpi">
@@ -784,7 +905,7 @@ function renderDashboardRoot(){
     <div class="section-title">Traslados atrasados <span class="see-all" onclick="showTab('list')">Ver todos ›</span></div>
     <div class="rows-wrap">
   `;
-  const filteredAtrasados = pend.filter(t=>passesThreshold(t, minDiasDash)).sort((a,b)=>b.dias-a.dias);
+  const filteredAtrasados = [...pendFiltrado].sort((a,b)=>b.dias-a.dias);
   const top3 = filteredAtrasados.slice(0,3);
   html += top3.length ? top3.map(rowItemHTML).join("") : `<div class="empty-note">Ningún traslado en este rango de días 🎉</div>`;
   html += `</div>`;
@@ -797,21 +918,23 @@ function renderDashboard(){
   if(currentSegment === null){ renderDashboardRoot(); return; }
   const scoped = scopedTraslados();
   const pend = pendientes(scoped);
-  const total = pend.length;
-  const alertas = pend.filter(t => t.dias >= 10).length;
   const avgDias = pend.length ? Math.round(pend.reduce((a,t)=>a+t.dias,0)/pend.length) : 0;
+
+  const pendFiltrado = pend.filter(t=>passesThreshold(t, minDiasDash));
+  const pvpTotal = pendFiltrado.reduce((sum,t)=>sum+t.valorMercancia,0);
+  const transitoFiltrado = scoped.filter(t=>t.estado==='en_transito' && passesThreshold(t, minDiasDash));
 
   let html = `
     ${segmentTabsHTML()}
     <div class="kpi-grid">
       <div class="kpi">
         <div class="k-label">📦 Sin consolidar</div>
-        <div class="k-value">${total}</div>
-        <div class="k-sub ${alertas>0?'up-red':'up-green'}">${alertas} en alerta</div>
+        <div class="k-value">${pendFiltrado.length}</div>
+        <div class="k-sub pvp-highlight">$${pvpTotal.toLocaleString('es-CO')} PVP</div>
       </div>
       <div class="kpi">
         <div class="k-label">🚚 En tránsito</div>
-        <div class="k-value">${scoped.filter(t=>t.estado==='en_transito').length}</div>
+        <div class="k-value">${transitoFiltrado.length}</div>
         <div class="k-sub up-green">hacia destino</div>
       </div>
       <div class="kpi">
@@ -830,7 +953,7 @@ function renderDashboard(){
       <div class="section-title">Traslados atrasados <span class="see-all" onclick="showTab('list')">Ver todos ›</span></div>
       <div class="rows-wrap">
     `;
-    const filteredAtrasados = pend.filter(t=>passesThreshold(t, minDiasDash)).sort((a,b)=>b.dias-a.dias);
+    const filteredAtrasados = [...pendFiltrado].sort((a,b)=>b.dias-a.dias);
     const top3 = filteredAtrasados.slice(0,3);
     html += top3.length ? top3.map(rowItemHTML).join("") : `<div class="empty-note">Ningún traslado en este rango de días 🎉</div>`;
     html += `</div>`;
@@ -945,6 +1068,14 @@ function renderDetail(){
     </div>
   ` : "";
 
+  const productosHTML = (t.productos || []).map(p => `
+    <div class="prod-row">
+      <div class="prod-sku">${p.sku}</div>
+      <div class="prod-nombre">${p.nombre}</div>
+      <div class="prod-cant">${p.cantidad} u.</div>
+    </div>
+  `).join("");
+
   const ubicacionHTML = t.regional ? `
         <div><div class="lbl">Regional</div><div class="val">${t.regional}</div></div>
         <div><div class="lbl">Ciudad</div><div class="val">${t.ciudad}</div></div>
@@ -971,6 +1102,13 @@ function renderDetail(){
         <div><div class="lbl">Placa</div><div class="val">${t.placa}</div></div>
         <div><div class="lbl">Valor mercancía</div><div class="val">$${t.valorMercancia.toLocaleString('es-CO')}</div></div>
         <div style="grid-column:1/-1;"><div class="lbl">Motivo</div><div class="val">${t.motivo}</div></div>
+      </div>
+      <button class="ver-detalle-btn" onclick="toggleContenido()">📦 Ver detalle <span id="contenidoChevron">›</span></button>
+      <div id="contenidoPanel" class="contenido-panel" style="display:none;">
+        <div class="prod-header">
+          <div>SKU</div><div>Referencia</div><div>Cant.</div>
+        </div>
+        ${productosHTML}
       </div>
     </div>
 
