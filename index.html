@@ -118,7 +118,8 @@
   .up-red{ color:var(--red); }
   .up-green{ color:var(--green); }
   .up-amber{ color:var(--amber); }
-  .pvp-highlight{ color:#FFD84D; font-weight:800; font-size:11px; }
+  .pvp-highlight{ color:#FFD84D; font-weight:800; font-size:11px; margin-top:2px; }
+  .k-sub-units{ font-size:9.5px; color:var(--text-dim); font-weight:600; margin-top:1px; }
 
   .section-title{
     font-size:12px; text-transform:uppercase; letter-spacing:.6px; color:var(--text-dim);
@@ -943,6 +944,7 @@ function renderDashboardRoot(){
 
   const pendFiltrado = pend.filter(t=>passesThreshold(t, minDiasDash));
   const pvpTotal = pendFiltrado.reduce((sum,t)=>sum+t.valorMercancia,0);
+  const unidadesTotal = pendFiltrado.reduce((sum,t)=>sum+(t.productos||[]).reduce((s,p)=>s+p.cantidad,0),0);
   const transitoFiltrado = all.filter(t=>t.estado==='en_transito' && passesThreshold(t, minDiasDash));
 
   let html = `
@@ -950,7 +952,8 @@ function renderDashboardRoot(){
       <div class="kpi">
         <div class="k-label">📦 Sin consolidar</div>
         <div class="k-value">${pendFiltrado.length}</div>
-        <div class="k-sub pvp-highlight">$${pvpTotal.toLocaleString('es-CO')} PVP</div>
+        <div class="k-sub pvp-highlight">$${pvpTotal.toLocaleString('es-CO')}</div>
+        <div class="k-sub-units">${unidadesTotal} und</div>
       </div>
       <div class="kpi">
         <div class="k-label">🚚 En tránsito</div>
@@ -987,6 +990,7 @@ function renderDashboard(){
 
   const pendFiltrado = pend.filter(t=>passesThreshold(t, minDiasDash));
   const pvpTotal = pendFiltrado.reduce((sum,t)=>sum+t.valorMercancia,0);
+  const unidadesTotal = pendFiltrado.reduce((sum,t)=>sum+(t.productos||[]).reduce((s,p)=>s+p.cantidad,0),0);
   const transitoFiltrado = scoped.filter(t=>t.estado==='en_transito' && passesThreshold(t, minDiasDash));
 
   let html = `
@@ -995,7 +999,8 @@ function renderDashboard(){
       <div class="kpi">
         <div class="k-label">📦 Sin consolidar</div>
         <div class="k-value">${pendFiltrado.length}</div>
-        <div class="k-sub pvp-highlight">$${pvpTotal.toLocaleString('es-CO')} PVP</div>
+        <div class="k-sub pvp-highlight">$${pvpTotal.toLocaleString('es-CO')}</div>
+        <div class="k-sub-units">${unidadesTotal} und</div>
       </div>
       <div class="kpi">
         <div class="k-label">🚚 En tránsito</div>
